@@ -1,2 +1,2 @@
-# regain
-For you work hard at overtime every day
+# Regain
+毎日残業を頑張るあなたに送るタスク管理ツール
