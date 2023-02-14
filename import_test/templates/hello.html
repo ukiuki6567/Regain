@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<blockquote>
+<h3>プロジェクト一覧</h3>
+</blockquote>
+<table>
+<tr>
+<th>project_id</th>
+<th>project_name</th>
+<th>estimate_time</th>
+</tr>
+{% for project in projects %}
+        <tr>
+        <td>{{ project.project_id}}</td>
+        <td>{{ project.project_name}}</td>
+        <td>{{ project.estimate_time}}</td>
+        </tr>
+{% endfor %}
+</table>
+{{ memo }}
+{% endblock %}
