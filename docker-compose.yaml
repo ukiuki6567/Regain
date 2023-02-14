@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: "./"
+      dockerfile: "flask_Dockerfile"
+    networks:
+      - Regain-network
+    ports:
+      - "80:80"
+    container_name: Regain-app
+    volumes:
+      - ./app:/usr/src/app
+    command: flask run --host=0.0.0.0
+
+  db:
+    build:
+      context: "./"
+      dockerfile: "mariadb_Dockerfile"
+    networks:
+      - Regain-network
+    ports:
+      - "3306:3306"
+    container_name: Regain-db
+    volumes:
+      - ./data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "regain@team24"
+
+networks:
+  Regain-network:
