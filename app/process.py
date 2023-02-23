@@ -1,6 +1,6 @@
 #プロセスに対するcreate,edit,delete,process選択処理の定義
 
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, render_template
 from db_driver import dbDriver
 import task
 
@@ -84,4 +84,5 @@ def task_get(project_id, process_id):
 
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
-    return jsonify(rows)
+    # return jsonify(rows)
+    return render_template('tasks.html', title='tasks', tasks=rows)

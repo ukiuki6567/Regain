@@ -1,6 +1,6 @@
 #プロジェクトに対するcreate,edit,delete,project選択処理の定義
 
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, render_template
 from db_driver import dbDriver
 import process
 import datetime
@@ -130,4 +130,5 @@ def process_get(project_id):
     
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
+    return render_template('processes.html', title='processes', processes=rows)
     return jsonify(rows)

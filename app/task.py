@@ -1,6 +1,6 @@
 #タスクに対するcreate,edit,delete,task選択、タイマー更新処理の定義
 
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, render_template
 from db_driver import dbDriver
 import datetime
 
@@ -45,6 +45,7 @@ def timer_get(project_id, process_id, task_id):
 
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
+    return render_template('timer.html', title='timer', task_name = task_name, commit_time = commit_time)
     return jsonify({
                         "task_name": task_name,
                         "commit_time": commit_time,
