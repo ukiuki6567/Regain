@@ -1,4 +1,4 @@
-{% extends "frame.html" %}
+{% extends "menu.html" %}
 {% block content %}
 <blockquote>
 <h3>プロセス一覧</h3>
@@ -25,5 +25,17 @@
         </tr>
 {% endfor %}
 </table>
-{{ memo }}
+<blockquote>
+<h3>ステータスプルダウン一覧</h3>
+</blockquote>
+<table>
+<tr>
+<th>status_name</th>
+</tr>
+{% for status_name in status_names %}
+        <tr>
+        <td>{{ status_name.status_name}}</td>
+        </tr>
+{% endfor %}
+</table>
 {% endblock %}

@@ -49,7 +49,7 @@ def timer_get(project_id, process_id, task_id):
     return jsonify({
                         "task_name": task_name,
                         "commit_time": commit_time,
-                    })    
+                    })
 
 #タイマー情報更新
 @bp.route('/<int:task_id>', methods=['POST'])

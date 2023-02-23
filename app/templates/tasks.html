@@ -1,4 +1,4 @@
-{% extends "frame.html" %}
+{% extends "menu.html" %}
 {% block content %}
 <blockquote>
 <h3>タスク一覧</h3>
@@ -23,5 +23,30 @@
         </tr>
 {% endfor %}
 </table>
-{{ memo }}
+<blockquote>
+<h3>ステータスプルダウン一覧</h3>
+</blockquote>
+<table>
+<tr>
+<th>status_name</th>
+</tr>
+{% for status_name in status_names %}
+        <tr>
+        <td>{{ status_name.status_name}}</td>
+        </tr>
+{% endfor %}
+</table>
+<blockquote>
+<h3>優先度プルダウン一覧</h3>
+</blockquote>
+<table>
+<tr>
+<th>priority_name</th>
+</tr>
+{% for priority in priorities %}
+        <tr>
+        <td>{{ priority.priority_name}}</td>
+        </tr>
+{% endfor %}
+</table>
 {% endblock %}
