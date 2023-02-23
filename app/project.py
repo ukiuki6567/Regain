@@ -44,6 +44,56 @@ def project_create():
 #既存プロジェクト編集
 @bp.route('/edit', methods=['POST'])
 def project_edit():
+    """
+    既存のプロジェクト情報を変更する関数。
+    プロジェクト名の情報変更があった場合、その内容をDBに更新する。
+    Method: POST
+    jsonファイル例:
+    {
+        "project_id": 12345
+        "project_name": "ほげほげ"
+    }
+    """
+
+    # 処理開始
+    print("処理開始: /edit")
+    
+    # dbDriverの生成
+    regain_db_driver = dbDriver()
+
+    ### プロジェクト名の更新があった場合、これをDBに反映（Update）する。
+    # try:
+    # requestにより情報取得
+    params = request.get_json()
+    print(f"params: {params}")
+
+    project_name = params["project_name"]
+    project_id = params["project_id"]
+    print(f"project_name: {project_name}, project_id: {project_id}")
+    
+    # HTTP200OKなどの結果を格納する数字
+    result_num = 0
+
+    # プロジェクト一覧更新SQL
+    project_update_sql = f"""
+                            UPDATE
+                                projects
+                            SET
+                                project_name = '{project_name}'
+                            WHERE
+                                project_id = {project_id}
+                        """
+    rows = regain_db_driver.sql_run(project_update_sql)
+    rows = regain_db_driver.sql_run("COMMIT")
+    
+    result_num = regain_db_driver.db_close()
+    
+    print(f"result: {result_num}")
+    
+    # except:
+        # print("Something Failed...") # 本当はここでLoggerを使いたい
+    
+    # return render_template('projects.html', title='projects', projects=rows), result_num
     return jsonify()
 
 #既存プロジェクト削除
