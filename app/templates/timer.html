@@ -1,16 +1,74 @@
-{% extends frame.html %}
+{% extends "frame.html" %}
 
 {% block content %}
 
 <h1>タスク名</h1>
 <div id="container">
-<div id="time">00:00</div>
-<div id="buttons">
-    <input id="start" type="button" value="開始">
-    <input id="stop" type="button" value="終了">
+  <div id="time">00:00</div>
+  <div id="buttons">
+    <input id="start" class="btn btn-primary" type="button" value="開始">
+    <input id="stop" class="btn btn-danger" type="button" value="終了">
     <!-- <input id="reset" type="button" value="reset"> -->
+  </div>
 </div>
-</div>  
-<script src='main.js'></script>
+
+<script>
+  const time = document.getElementById('time');
+  const startButton = document.getElementById('start');
+  const stopButton = document.getElementById('stop');
+  // const resetButton = document.getElementById('reset');
+
+  // 開始時間
+  let startTime;
+  // 停止時間
+  let stopTime = 0;
+  // タイムアウトID
+  let timeoutID;
+
+  // 時間を表示する関数
+  function displayTime() {
+    const currentTime = new Date(Date.now() - startTime + stopTime);
+    const h = String(currentTime.getHours() - 9).padStart(2, '0');
+    const m = String(currentTime.getMinutes()).padStart(2, '0');
+    //  const s = String(currentTime.getSeconds()).padStart(2, '0');
+    //  const ms = String(currentTime.getMilliseconds()).padStart(3, '0');
+
+    //  time.textContent = `${h}:${m}:${s}.${ms}`;
+    time.textContent = `${h}:${m}`;
+    timeoutID = setTimeout(displayTime, 10);
+  }
+
+  // スタートボタンがクリックされたら時間を進める
+  startButton.addEventListener('click', () => {
+    startButton.disabled = false;
+    stopButton.disabled = false;
+    startButton.value = "中断"
+    //resetBut.texton.disabled = true;
+    startTime = Date.now();
+    displayTime();
+  });
+
+  // ストップボタンがクリックされたら時間を止める
+  stopButton.addEventListener('click', function () {
+    startButton.disabled = false;
+    stopButton.disabled = true;
+    //resetButton.disabled = false;
+    clearTimeout(timeoutID);
+    stopTime += (Date.now() - startTime);
+  });
+
+// リセットボタンがクリックされたら時間を0に戻す
+  /*
+  resetButton.addEventListener('click', function() {
+    startButton.disabled = false;
+    stopButton.disabled = true;
+    resetButton.disabled = true;
+    //time.textContent = '00:00:00.000';
+    time.textContent = '00:00';
+    stopTime = 0;
+  });
+  */
+
+</script>
 
 {% endblock %}
