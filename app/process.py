@@ -10,11 +10,16 @@ bp = Blueprint('process', __name__, url_prefix="/<int:project_id>")
 bp.register_blueprint(task.bp)
 
 #新規プロセス作成
+#受信JSON例
+# {
+#   "process_name":"processのなまえ",
+#   "estimated_time":"24:00",
+#   "deadline":"2023-02-05"
+# }
 @bp.route('/create', methods=['POST'])
 def process_create(project_id):
     params = request.get_json()
     process_name = params["process_name"]
-    status_name = params.get("status_name","未着手")
     estimated_time = params.get("estimated_time","0:00")
     estimated_time += ":00"
     deadline = params.get("deadline","0000-00-00")
@@ -25,13 +30,9 @@ def process_create(project_id):
     #process生成SQL文
     process_insert_sql = f"""
                         INSERT INTO
-                            processes (process_name, status_id, project_id, estimated_time, deadline)
-                        SELECT
-                            '{process_name}', status_id, {project_id}, CAST('{estimated_time}' as TIME), CAST('{deadline}' as DATE)
-                        FROM
-                            process_statuses
-                        WHERE
-                            status_name = '{status_name}'
+                            processes (process_name, project_id, estimated_time, deadline)
+                        VALUES
+                            ('{process_name}', {project_id}, CAST('{estimated_time}' as TIME), CAST('{deadline}' as DATE))
                         """
     rows = regain_db_driver.sql_run(process_insert_sql)
     rows = regain_db_driver.sql_run("COMMIT")

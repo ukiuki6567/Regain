@@ -8,8 +8,41 @@ import datetime
 bp = Blueprint('task', __name__, url_prefix="/<int:process_id>")
 
 #新規タスク作成
+#受信JSON例
+# {
+#   "task_name":"taskのなまえ",
+#   "priority_name":"低",
+#   "estimated_time":"24:00",
+#   "deadline":"2023-02-05"
+# }
 @bp.route('/create', methods=['POST'])
 def task_create(project_id, process_id):
+    params = request.get_json()
+    task_name = params["task_name"]
+    priority_name = params.get("priority_name")
+    estimated_time = params.get("estimated_time","0:00")
+    estimated_time += ":00"
+    deadline = params.get("deadline","0000-00-00")
+
+    #dbDriverの生成
+    regain_db_driver = dbDriver()
+    
+    #task生成SQL文
+    process_insert_sql = f"""
+                        INSERT INTO
+                            tasks (task_name, process_id, priority_id, estimated_time, deadline)
+                        SELECT
+                            '{task_name}', {process_id}, priority_id, CAST('{estimated_time}' as TIME), CAST('{deadline}' as DATE)
+                        FROM
+                            priorities
+                        WHERE
+                            priority_name = '{priority_name}'
+                        """
+    rows = regain_db_driver.sql_run(process_insert_sql)
+    rows = regain_db_driver.sql_run("COMMIT")
+
+    #dbDriverのクローズと200OK返却
+    regain_db_driver.db_close()
     return jsonify()
 
 #既存タスク編集
