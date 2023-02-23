@@ -1,8 +1,7 @@
 #タスクに対するcreate,edit,delete,task選択、タイマー更新処理の定義
 
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, request
 from db_driver import dbDriver
-import task
 import datetime
 
 #プロセスのルーティング/<int:project_id>

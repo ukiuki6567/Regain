@@ -1,6 +1,6 @@
 #プロセスに対するcreate,edit,delete,process選択処理の定義
 
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, request
 from db_driver import dbDriver
 import task
 
@@ -12,6 +12,32 @@ bp.register_blueprint(task.bp)
 #新規プロセス作成
 @bp.route('/create', methods=['POST'])
 def process_create(project_id):
+    params = request.get_json()
+    process_name = params["process_name"]
+    status_name = params.get("status_name","未着手")
+    estimated_time = params.get("estimated_time","0:00")
+    estimated_time += ":00"
+    deadline = params.get("deadline","0000-00-00")
+
+    #dbDriverの生成
+    regain_db_driver = dbDriver()
+    
+    #process生成SQL文
+    process_insert_sql = f"""
+                        INSERT INTO
+                            processes (process_name, status_id, project_id, estimated_time, deadline)
+                        SELECT
+                            '{process_name}', status_id, {project_id}, CAST('{estimated_time}' as TIME), CAST('{deadline}' as DATE)
+                        FROM
+                            process_statuses
+                        WHERE
+                            status_name = '{status_name}'
+                        """
+    rows = regain_db_driver.sql_run(process_insert_sql)
+    rows = regain_db_driver.sql_run("COMMIT")
+
+    #dbDriverのクローズと200OK返却
+    regain_db_driver.db_close()
     return jsonify()
 
 #既存プロセス編集
@@ -28,35 +54,33 @@ def process_delete(project_id):
 @bp.route('/<int:process_id>')
 def task_get(project_id, process_id):
     
-    #dbDriverの生成とSQL実行
+    #dbDriverの生成
     regain_db_driver = dbDriver()
 
-    
-    #タスク一覧取得
-    
-    # JOIN元のSQLパーツ
-    # rows = regain_db_driver.sql_run("select task_id from tasks where process_id = " + str(process_id))
-    # print(rows)
-    # rows = regain_db_driver.sql_run("select task_id, DATE_FORMAT(sec_to_time(sum(time_to_sec(commit_time))),'%k:%i') as passed_time from commits group by task_id ")
-    # print(rows)
-
-    rows = regain_db_driver.sql_run("select tasks.task_id," + 
-                                    " task_name," + 
-                                    " DATE_FORMAT(estimated_time,'%k:%i') as estimated_time,"
-                                    " DATE_FORMAT(deadline,'%m/%e') as deadline," +
-                                    " IFNULL(times.passed_time, '0:00') as passed_time," +
-                                    " status_name," +
-                                    " priority_name," +
-                                    " IFNULL(running_days, 0) as running_days" +
-                                    " from tasks" +
-                                    " left join (select task_id, count(*) as running_days, DATE_FORMAT(sec_to_time(sum(time_to_sec(commit_time))),'%k:%i') as passed_time from commits group by task_id) as times" +
-                                    " on tasks.task_id = times.task_id" +
-                                    " left join task_statuses" +
-                                    " on tasks.status_id = task_statuses.status_id" +
-                                    " left join priorities" +
-                                    " on tasks.priority_id = priorities.priority_id" +
-                                    " where process_id = " + str(process_id))
-    print(rows)
+    #タスク一覧取得SQL
+    task_list_sql = f"""
+                    SELECT
+                        tasks.task_id,
+                        task_name,
+                        DATE_FORMAT(estimated_time,'%k:%i') as estimated_time,
+                        DATE_FORMAT(deadline,'%m/%e') as deadline,
+                        DATE_FORMAT(sec_to_time(IFNULL(sum(time_to_sec(commit_time)),0)),'%k:%i') as passed_time,
+                        status_name,
+                        priority_name
+                    FROM 
+                        tasks
+                        left join commits
+                            on tasks.task_id = commits.task_id
+                        left join task_statuses
+                            on tasks.status_id = task_statuses.status_id
+                        left join priorities
+                            on tasks.priority_id = priorities.priority_id
+                    WHERE 
+                        process_id = {process_id}
+                    GROUP BY
+                        task_id
+                    """
+    rows = regain_db_driver.sql_run(task_list_sql)
 
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
