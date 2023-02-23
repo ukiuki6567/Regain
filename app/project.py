@@ -1,6 +1,6 @@
 #プロジェクトに対するcreate,edit,delete,project選択処理の定義
 
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, render_template
 from db_driver import dbDriver
 import process
 import datetime
@@ -107,10 +107,10 @@ def process_get(project_id):
                             GROUP BY
                                 process_id
                         """
-    rows = regain_db_driver.sql_run(process_list_sql)
+    processes = regain_db_driver.sql_run(process_list_sql)
 
     #予測日数を計算
-    for one_process in rows:
+    for one_process in processes:
         #過去の作業記録がないプロセスのpredict_timeは-1
         if(one_process["passed_date"] == 0 or (one_process["today_commit_time"] > 0 and one_process["passed_date"] == 1)) :
             one_process["predict_time"] = -1
@@ -127,7 +127,17 @@ def process_get(project_id):
             required_day = one_process["estimated_time_sec"] / passed_time_par_day
             predict_time = required_day - one_process["passed_date"]
         one_process["predict_time"] = math.ceil(predict_time)
+        
+    #プロセスステータス一覧取得SQL
+    name_list_sql = """
+                    SELECT
+                        status_name
+                    FROM
+                        process_statuses
+                    """
+    status_names = regain_db_driver.sql_run(name_list_sql)
     
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
+    return render_template('processes.html', title='processes', processes=processes, status_names = status_names)
     return jsonify(rows)

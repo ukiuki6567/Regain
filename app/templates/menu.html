@@ -1,17 +1,15 @@
 {% extends "frame.html" %}
-{% block content %}
+{% block menus %}
 <blockquote>
 <h3>メニュー</h3>
 </blockquote>
 <table>
-<tr>
-<th>name</th>
-</tr>
-{% for item in menu_items %}
         <tr>
-        <td>{{ item.name}}</td>
+        <td>メニュー1</td>
+        <td>メニュー2</td>
+        <td>メニュー3</td>
         </tr>
-{% endfor %}
 </table>
-{{ memo }}
+{% block content %}
+{% endblock %}
 {% endblock %}

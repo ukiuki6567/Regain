@@ -5,8 +5,8 @@ class dbDriver:
     def __init__(self):
         host_aa='localhost'
         data_base = 'regain'
-        user_aa ='root'
-        password_aa = 'root_password'
+        user_aa ='regain_app'
+        password_aa = 'regain_app'
         self.conection = mysql.connector.connect(user=user_aa, password=password_aa,
                                 host=host_aa,database=data_base)
 

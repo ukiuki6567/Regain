@@ -1,6 +1,6 @@
 #プロセスに対するcreate,edit,delete,process選択処理の定義
 
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, render_template
 from db_driver import dbDriver
 import task
 
@@ -80,8 +80,27 @@ def task_get(project_id, process_id):
                     GROUP BY
                         task_id
                     """
-    rows = regain_db_driver.sql_run(task_list_sql)
+    tasks = regain_db_driver.sql_run(task_list_sql)
+        
+    #タスクステータス一覧取得SQL
+    name_list_sql = """
+                    SELECT
+                        status_name
+                    FROM
+                        task_statuses
+                    """
+    status_names = regain_db_driver.sql_run(name_list_sql)
+        
+    #優先度一覧取得SQL
+    name_list_sql = """
+                    SELECT
+                        priority_name
+                    FROM
+                        priorities
+                    """
+    priorities = regain_db_driver.sql_run(name_list_sql)
 
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
-    return jsonify(rows)
+    # return jsonify(rows)
+    return render_template('tasks.html', title='tasks', tasks=tasks, status_names = status_names, priorities = priorities)
