@@ -62,38 +62,40 @@ def project_edit():
     regain_db_driver = dbDriver()
 
     ### プロジェクト名の更新があった場合、これをDBに反映（Update）する。
-    # try:
-    # requestにより情報取得
-    params = request.get_json()
-    print(f"params: {params}")
+    try:
+        # requestにより情報取得
+        params = request.get_json()
+        print(f"params: {params}")
 
-    project_name = params["project_name"]
-    project_id = params["project_id"]
-    print(f"project_name: {project_name}, project_id: {project_id}")
-    
-    # HTTP200OKなどの結果を格納する数字
-    result_num = 0
+        project_name = params["project_name"]
+        project_id = params["project_id"]
+        print(f"project_name: {project_name}, project_id: {project_id}")
+        
+        # HTTP200OKなどの結果を格納する数字
+        result_num = 0
 
-    # プロジェクト一覧更新SQL
-    project_update_sql = f"""
-                            UPDATE
-                                projects
-                            SET
-                                project_name = '{project_name}'
-                            WHERE
-                                project_id = {project_id}
-                        """
-    rows = regain_db_driver.sql_run(project_update_sql)
-    rows = regain_db_driver.sql_run("COMMIT")
+        # プロジェクト一覧更新SQL
+        project_update_sql = f"""
+                                UPDATE
+                                    projects
+                                SET
+                                    project_name = '{project_name}'
+                                WHERE
+                                    project_id = {project_id}
+                            """
+        rows = regain_db_driver.sql_run(project_update_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+
+        result_num = regain_db_driver.db_close()
+        
+        print(f"result: {result_num}")
     
-    result_num = regain_db_driver.db_close()
-    
-    print(f"result: {result_num}")
-    
-    # except:
-        # print("Something Failed...") # 本当はここでLoggerを使いたい
+    except:
+        print("Something Failed...") # 本当はここでLoggerを使いたい
     
     # return render_template('projects.html', title='projects', projects=rows), result_num
+    # 処理終了
+    print(f"処理終了: /edit")
     return jsonify()
 
 #既存プロジェクト削除
