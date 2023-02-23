@@ -1,0 +1,29 @@
+{% extends "frame.html" %}
+{% block content %}
+<blockquote>
+<h3>プロセス一覧</h3>
+</blockquote>
+<table>
+<tr>
+<th>process_id</th>
+<th>process_name</th>
+<th>estimate_time</th>
+<th>predict_time</th>
+<th>passed_time</th>
+<th>status_name</th>
+<th>deadline</th>
+</tr>
+{% for process in processes %}
+        <tr>
+        <td>{{ process.process_id}}</td>
+        <td>{{ process.process_name}}</td>
+        <td>{{ process.estimate_time}}</td>
+        <td>{{ process.predict_time}}</td>
+        <td>{{ process.passed_time}}</td>
+        <td>{{ process.status_name}}</td>
+        <td>{{ process.deadline}}</td>
+        </tr>
+{% endfor %}
+</table>
+{{ memo }}
+{% endblock %}
