@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+        integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>{% block title %}Mypage{% endblock %}</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h2>タスク一覧</h2>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-8 text-center">
+                <table class="table">
+                    <thead class="table-info">
+                        <tr>
+                            <th style="width: 5%" scope="col"></th>
+                            <th style="width: 20%" scope="col">タスク名</th>
+                            <th style="width: 15%" scope="col">ステータス</th>
+                            <th style="width: 10%" scope="col">優先度</th>
+                            <th style="width: 15%" scope="col">予測時間</th>
+                            <th style="width: 15%" scope="col">経過時間</th>
+                            <th style="width: 10%" scope="col">〆切</th>
+                            <th style="width: 10%" scope="col">取り組む</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks"></th>
+                            <td>タスクA</td>
+                            <td>未着手</td>
+                            <td>高</td>
+                            <td>0</td>
+                            <td>0:00</td>
+                            <td>2/11</td>
+                            <td><button type="button" class="btn btn-info w-20 me-5 px-3 text">START</button></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><input class="form-check-input" type="radio" name="selectTasks"></th>
+                            <td>タスクB</td>
+                            <td>完了</td>
+                            <td>中</td>
+                            <td>0.4</td>
+                            <td>1:00</td>
+                            <td>3/12</td>
+                            <td><button type="button" class="btn btn-info w-20 me-5 px-3">START</button></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><input class="form-check-input" type="radio" name="selectTasks"></th>
+                            <td>タスクC</td>
+                            <td>進行中</td>
+                            <td>低</td>
+                            <td>0.2</td>
+                            <td>0:30</td>
+                            <td>1/31</td>
+                            <td><button type="button" class="btn btn-info w-20 me-5 px-3">START</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
