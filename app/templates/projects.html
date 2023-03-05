@@ -1,36 +1,154 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset='utf-8'>
-  <title>Stopwatch</title>
- <!-- <link rel='stylesheet' type='text/css' href='styles.css'> -->
-</head>
+{% extends "menu.html" %}
+{% block article %}
+<!-- bootstrapのリンクは後で消す -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<!-- bootstrapのリンクは後で消す -->
+
+<!-- モーダル用のCSS -->
+<style>
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+  }
+  
+  .modal-content {
+    background-color: #f4f4f4;
+    margin: 20% auto;
+    width: 50%;
+    box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2),0 7px 20px 0 rgba(0,0,0,0.17);
+    animation-name: modalopen;
+    animation-duration: 1s;
+  }
+  
+  @keyframes modalopen {
+    from {opacity: 0}
+    to {opacity: 1}
+  }
+  
+  .modal-header h1 {
+    margin: 1rem 0;
+  }
+
+  .modal-header {
+  background: lightblue;
+  padding: 3px 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-body {
+  padding: 10px 20px;
+  color: black;
+}
+</style>
+<!-- モーダル用のCSS -->
 
 <body>
-  <h1>プロジェクト一覧</h1>
-  <button type="button" name="edit" value="value">編集</button>
-  <button type="button" name="delete" value="value">消去</button>
-  <button type="button" name="create" value="value">新規作成</button>
-  <table border="1">
-    <tr>
-      <tr bgcolor="#005588"> 
-      <th> </th>   
-      <th><font color=white>プロジェクト</font></th>
-      <th><font color=white>予測時間</font></th>
-      <th><font color=white>経過時間</font></th>
-    </tr>
-    <tr>
-      <td><label><input type="radio" id="d10-2" name="d10-1"></label></td>
-      <td>プロジェクトA</td>
-      <td>27:00</td>
-      <td>24:50</td>
-    </tr>
-    <tr>
-        <td><label><input type="radio" id="d10-2" name="d10-1"></label></td>
-      <td>プロジェクトB</td>
-      <td>12:45</td>
-      <td>11:50</td>
-    </tr>
-  </table>
+  <h1>仮ボタン</h1>
+  <button id="modalOpen" type="button" name="create" value="value">New</button>
+  <button type="button" name="edit" value="value">Edit</button>
+  <button type="button" name="delete" value="value">Trash</button>
+
+  <div class="container">
+    <div class="row">
+        <h2>プロジェクト一覧</h2>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-8 text-center">
+            <table class="table">
+                <thead class="table-info">
+                    <tr>
+                        <th style="width: 10%" scope="col"></th>
+                        <th style="width: 30%" scope="col">プロジェクト名</th>
+                        <th style="width: 30%" scope="col">予測時間</th>
+                        <th style="width: 30%" scope="col">経過時間</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                      <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks"></th>
+                      <td>プロジェクトA</td>
+                      <td>0:00</td>
+                      <td>0:00</td>
+                    </tr>
+                    <tr>
+                      <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks"></th>
+                      <td>プロジェクトB</td>
+                      <td>10:00</td>
+                      <td>3:30</td>
+                    </tr>
+                    <tr>
+                      <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks"></th>
+                      <td>プロジェクトC</td>
+                      <td>9:00</td>
+                      <td>10:00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+  </div>
+<!-- ここからモーダル -->
+  <div id="Modal" class="modal">
+    <div class="container">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>プロジェクト新規作成</h2>
+          <span class="modalClose">✕</span>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div>
+              <label for="InputProject" class="form-label">プロジェクト名</label>
+              <input type="project" class="form-control" id="InputProject" aria-describedby="projectHelp">
+              <div id="projectHelp" class="form-text">入力必須</div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
+              </div>
+              <div class="col">
+                <button type="create" class="btn btn-info modalClose">作成</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- ここまでモーダル -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+
+<!-- モーダルの開閉のスクリプト、menu.htmlに統合 -->
+  <script>
+    const buttonOpen = document.getElementById('modalOpen');
+    const modal = document.getElementById('Modal');
+    const buttonClose = document.getElementsByClassName('modalClose')[0];
+    
+    // ボタンがクリックされた時
+    buttonOpen.addEventListener('click', modalOpen);
+    function modalOpen() {
+      modal.style.display = 'block';
+    }
+    
+    // バツ印がクリックされた時
+    buttonClose.addEventListener('click', modalClose);
+    function modalClose() {
+      modal.style.display = 'none';
+    }
+    
+    
+  </script>
 </body>
-</html>
+
+{% endblock %}
