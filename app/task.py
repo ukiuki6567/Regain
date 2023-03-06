@@ -4,6 +4,8 @@ from flask import jsonify, Blueprint, request, render_template
 from db_driver import dbDriver
 import datetime
 
+from sql_template import SQLTemplates as sql_temp
+
 #プロセスのルーティング/<int:project_id>
 bp = Blueprint('task', __name__, url_prefix="/<int:process_id>")
 
@@ -45,9 +47,68 @@ def task_create(project_id, process_id):
     regain_db_driver.db_close()
     return jsonify()
 
+
+
+
+
+
 #既存タスク編集
 @bp.route('/edit', methods=['POST'])
 def task_edit(project_id, process_id):
+    """
+    既存のプロジェクト情報を変更する関数。
+    プロジェクト名の情報変更があった場合、その内容をDBに更新する。
+    Method: POST
+    jsonファイル例:
+    {
+        "task_id": 12345,
+        "task_name": "ほげほげ",
+        "priority_id": 3,
+        "deadline": "2023-02-23"
+    }
+    """
+
+    # 処理開始
+    print(f"処理開始: /{project_id}/{process_id}/edit")
+    
+    # dbDriverの生成
+    regain_db_driver = dbDriver()
+
+    ### タスクの更新があった場合、これをDBに反映（Update）する。
+    try:
+        # requestにより情報取得
+        params = request.get_json()
+        print("hoge")
+
+        task_name, task_id = params["task_name"], params["task_id"]
+        priority_id = params["priority_id"]
+        print("hoge")
+        deadline = params.get("deadline","0000-00-00")
+
+        print(f"task_name: {task_name}, task_id: {task_id}, proiroty_id: {priority_id}, deadline: {deadline}")
+        
+        # HTTP200OKなどの結果を格納する数字
+        result_num = 0
+
+        # プロジェクト一覧更新SQL
+        task_update_sql = sql_temp.TASK_UPDATE_SQL.format(
+            task_name = task_name,
+            task_id = task_id,
+            priority_id = priority_id,
+            deadline = deadline
+        )
+        # print(task_update_sql)
+
+        rows = regain_db_driver.sql_run(task_update_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+        result_num = regain_db_driver.db_close()
+        
+    except:
+        print("Something Failed...") # 本当はここでLoggerを使いたい
+
+    # 処理終了
+    print(f"処理終了: /{project_id}/{process_id}/edit")
+
     return jsonify()
 
 #既存タスク削除
