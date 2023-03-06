@@ -2,13 +2,19 @@
 
 {% block content %}
 
-<h1>タスク名</h1>
-<div id="container">
-  <div id="time">00:00</div>
-  <div id="buttons">
-    <input id="start" class="btn btn-primary" type="button" value="開始">
-    <input id="stop" class="btn btn-danger" type="button" value="終了">
-    <!-- <input id="reset" type="button" value="reset"> -->
+<div class="container">
+  <div class="bg-light rounded-3 p-5 my-5">
+    <div class="row">
+      <h1 id="task_name" class="text-light p-3 rounded-3 text-center" style="background-color: #002d5b">{{task_name}}
+      </h1>
+    </div>
+    <div class="row m-3">
+      <div id="time" class="text-center" style="font-size: 200px; color: #002d5b;">0:00</div>
+    </div>
+    <div class="row d-flex justify-content-evenly mb-4" id="buttons">
+      <button class="btn btn-outline-primary w-25 py-3 fs-3" id="start">開始</button>
+      <button class="btn btn-outline-danger w-25 py-2 fs-3" id="stop">終了</button>
+    </div>
   </div>
 </div>
 
@@ -16,58 +22,79 @@
   const time = document.getElementById('time');
   const startButton = document.getElementById('start');
   const stopButton = document.getElementById('stop');
-  // const resetButton = document.getElementById('reset');
+  let interval = 2000;
 
-  // 開始時間
-  let startTime;
-  // 停止時間
+  // 初期時間(ミリ秒)
+  let commitTime = 0;
+  let commitTimeHours = Number("{{commit_time}}".split(':')[0]);
+  let commitTimeMinutes = Number("{{commit_time}}".split(':')[1]);
+  commitTime += commitTimeHours * 60 * 60 * 1000;
+  commitTime += commitTimeMinutes * 60 * 1000;
+
+  // 開始時間(ミリ秒)
+  let startTime = 0;
+  // 停止時間(ミリ秒)
   let stopTime = 0;
+  // 表示時間(ミリ秒)
+  let currentTime = 0;
+
+  // 表示用変数
+  let h = "";
+  let m = "";
+
   // タイムアウトID
   let timeoutID;
 
+  let isDisplaySeparator = true;  // コロン表示/表示
+  let isCommitting = false;       // 動作中フラグ
+
+  // 初期表示
+  time.textContent = String(commitTimeHours).padStart(2, '0') + ":" + String(commitTimeMinutes).padStart(2, '0');
+
   // 時間を表示する関数
   function displayTime() {
-    const currentTime = new Date(Date.now() - startTime + stopTime);
-    const h = String(currentTime.getHours() - 9).padStart(2, '0');
-    const m = String(currentTime.getMinutes()).padStart(2, '0');
-    //  const s = String(currentTime.getSeconds()).padStart(2, '0');
-    //  const ms = String(currentTime.getMilliseconds()).padStart(3, '0');
+    
+    currentTime = commitTime + (Date.now() - startTime);
+    h = String(Math.floor(currentTime/60/60/1000)).padStart(2, '0');
+    m = String(Math.floor(currentTime/60/1000)).padStart(2, '0');
 
     //  time.textContent = `${h}:${m}:${s}.${ms}`;
-    time.textContent = `${h}:${m}`;
-    timeoutID = setTimeout(displayTime, 10);
+    if (isDisplaySeparator) {
+      time.textContent = `${h}:${m}`;
+      interval = 500;
+    } else {
+      time.textContent = `${h} ${m}`;
+      interval = 500;
+    }
+    isDisplaySeparator = !isDisplaySeparator;
+    timeoutID = setTimeout(displayTime, interval);
   }
 
   // スタートボタンがクリックされたら時間を進める
   startButton.addEventListener('click', () => {
-    startButton.disabled = false;
-    stopButton.disabled = false;
-    startButton.value = "中断"
-    //resetBut.texton.disabled = true;
-    startTime = Date.now();
-    displayTime();
+
+    if (isCommitting) {
+      startButton.innerText = "再開";
+      time.textContent = `${h}:${m}`;
+      clearTimeout(timeoutID);
+    } else {
+      startTime = Date.now();
+      startButton.innerText = "中断";
+      displayTime();
+    }
+
+    isCommitting = !isCommitting;
+    startButton.classList.toggle('btn-outline-primary');
+    startButton.classList.toggle('btn-outline-secondary');
+
   });
 
   // ストップボタンがクリックされたら時間を止める
-  stopButton.addEventListener('click', function () {
-    startButton.disabled = false;
-    stopButton.disabled = true;
-    //resetButton.disabled = false;
-    clearTimeout(timeoutID);
-    stopTime += (Date.now() - startTime);
-  });
+  stopButton.addEventListener('click', () => {
 
-// リセットボタンがクリックされたら時間を0に戻す
-  /*
-  resetButton.addEventListener('click', function() {
-    startButton.disabled = false;
-    stopButton.disabled = true;
-    resetButton.disabled = true;
-    //time.textContent = '00:00:00.000';
-    time.textContent = '00:00';
-    stopTime = 0;
+    clearTimeout(timeoutID);
+
   });
-  */
 
 </script>
 
