@@ -72,9 +72,6 @@ def process_edit(project_id):
 
         process_name, process_id = params["process_name"], params["process_id"]
         print(f"project_name: {process_name}, project_id: {process_id}")
-        
-        # HTTP200OKなどの結果を格納する数字
-        result_num = 0
 
         # プロジェクト一覧更新SQL
         process_update_sql = sql_temp.PROCESS_UPDATE_SQL.format(
@@ -85,19 +82,74 @@ def process_edit(project_id):
         rows = regain_db_driver.sql_run(process_update_sql)
         rows = regain_db_driver.sql_run("COMMIT")
         result_num = regain_db_driver.db_close()
+        result = "OK"
     
     except:
         print("Something Failed...") # 本当はここでLoggerを使いたい
+        result = "NG"
 
     # 処理終了
     print(f"処理終了: /{project_id}/edit")
 
-    return jsonify()
+    return jsonify(
+                {
+        'status': result
+        }
+    )
 
 #既存プロセス削除
-@bp.route('/delete', methods=['DELETE'])
+@bp.route('/delete', methods=['POST'])
 def process_delete(project_id):
-    return jsonify()
+    """
+    既存プロセス削除処理。
+    受け取ったprocess_idに対応するプロジェクトを削除する。
+
+    jsonファイル例:
+    {
+        "process_id": 12345
+    }
+
+    Returns:
+        json: {
+        'status': "OK" or "NG"
+        }
+    """
+    # 処理開始
+    print(f"処理開始: /{project_id}/delete")
+    
+    # dbDriverの生成
+    regain_db_driver = dbDriver()
+
+    ### プロジェクト名の更新があった場合、これをDBに反映（Update）する。
+    try:
+        # requestにより情報取得
+        params = request.get_json()
+        print(f"params: {params}")
+
+        process_id = params["process_id"]
+        print(f"process_id: {process_id}")
+
+        # プロジェクト一覧更新SQL
+        process_delete_sql = sql_temp.PROCESS_DELETE_SQL.format(process_id=process_id)
+        print(process_delete_sql)
+        rows = regain_db_driver.sql_run(process_delete_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+
+        regain_db_driver.db_close()
+        result = "OK"
+
+    except:
+        print("Something Failed...") # 本当はここでLoggerを使いたい
+        result = "NG"
+    
+    # 処理終了
+    print(f"処理終了: /{project_id}/delete")
+
+    return jsonify(
+                {
+        'status': result
+        }
+    )
 
 #既存プロセス選択、タスク一覧表示
 @bp.route('/<int:process_id>')

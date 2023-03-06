@@ -6,6 +6,8 @@ import process
 import datetime
 import math
 
+from sql_template import SQLTemplates as sql_temp
+
 #プロジェクトのルーティング/
 bp = Blueprint('project', __name__, url_prefix="/")
 #プロセスへのルーティング情報
@@ -53,6 +55,11 @@ def project_edit():
         "project_id": 12345
         "project_name": "ほげほげ"
     }
+
+    Returns:
+        json: {
+        'status': "OK" or "NG"
+        }
     """
 
     # 処理開始
@@ -70,38 +77,95 @@ def project_edit():
         project_name = params["project_name"]
         project_id = params["project_id"]
         print(f"project_name: {project_name}, project_id: {project_id}")
-        
-        # HTTP200OKなどの結果を格納する数字
-        result_num = 0
 
         # プロジェクト一覧更新SQL
-        project_update_sql = f"""
-                                UPDATE
-                                    projects
-                                SET
-                                    project_name = '{project_name}'
-                                WHERE
-                                    project_id = {project_id}
-                            """
+        project_update_sql = sql_temp.PROJECT_UPDATE_SQL.format(
+            project_name = project_name,
+            project_id = project_id
+        )
         rows = regain_db_driver.sql_run(project_update_sql)
         rows = regain_db_driver.sql_run("COMMIT")
 
-        result_num = regain_db_driver.db_close()
-        
-        print(f"result: {result_num}")
-    
+        regain_db_driver.db_close()
+        result = "OK"
+
     except:
         print("Something Failed...") # 本当はここでLoggerを使いたい
+        result = "NG"
     
-    # return render_template('projects.html', title='projects', projects=rows), result_num
     # 処理終了
     print(f"処理終了: /edit")
-    return jsonify()
+
+    return jsonify(
+        {
+        'status': result
+        }
+    )
 
 #既存プロジェクト削除
-@bp.route('/delete', methods=['DELETE'])
+@bp.route('/delete', methods=['POST']) #いったんmethodsをDELETEからPOSTに変更
+
+# project_id=1,2,3が存在する中で1,2を消すことができない(3は消せる)
+# -> 他テーブルにproject_idが存在する場合。
+
+# (1)tasksテーブルを見る
+# (2)削除したいproject_idが存在する場合削除
+# (3)processesテーブルを見て(1)(2)と同様のことを実施
+# (4)projectsテーブルを見て(1)(2)と同様のことを実施
+
+# おそらく外部キー制約のせい？ログが出ていないので調査できない、いったんここまで調べてPUSH
+TODO: エラーを出力し原因調査
+
 def project_delete():
-    return jsonify()
+    """
+    既存プロジェクト削除処理。
+    受け取ったproject_idに対応するプロジェクトを削除する。
+
+    jsonファイル例:
+    {
+        "project_id": 12345
+    }
+
+    Returns:
+        json: {
+        'status': "OK" or "NG"
+        }
+    """
+    # 処理開始
+    print("処理開始: /delete")
+    
+    # dbDriverの生成
+    regain_db_driver = dbDriver()
+
+    ### プロジェクト名の更新があった場合、これをDBに反映（Update）する。
+    try:
+        # requestにより情報取得
+        params = request.get_json()
+        print(f"params: {params}")
+
+        project_id = params["project_id"]
+        print(f"project_id: {project_id}")
+
+        # プロジェクト一覧更新SQL
+        project_delete_sql = sql_temp.PROJECT_DELETE_SQL.format(project_id=project_id)
+        rows = regain_db_driver.sql_run(project_delete_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+
+        regain_db_driver.db_close()
+        result = "OK"
+
+    except:
+        print("Something Failed...") # 本当はここでLoggerを使いたい
+        result = "NG"
+    
+    # 処理終了
+    print(f"処理終了: /delete")
+
+    return jsonify(
+        {
+        'status': result
+        }
+    )
 
 #既存プロジェクト選択、プロセス一覧表示
 @bp.route('/<int:project_id>')

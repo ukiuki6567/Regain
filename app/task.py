@@ -47,11 +47,6 @@ def task_create(project_id, process_id):
     regain_db_driver.db_close()
     return jsonify()
 
-
-
-
-
-
 #既存タスク編集
 @bp.route('/edit', methods=['POST'])
 def task_edit(project_id, process_id):
@@ -78,17 +73,12 @@ def task_edit(project_id, process_id):
     try:
         # requestにより情報取得
         params = request.get_json()
-        print("hoge")
 
         task_name, task_id = params["task_name"], params["task_id"]
         priority_id = params["priority_id"]
-        print("hoge")
         deadline = params.get("deadline","0000-00-00")
 
-        print(f"task_name: {task_name}, task_id: {task_id}, proiroty_id: {priority_id}, deadline: {deadline}")
-        
-        # HTTP200OKなどの結果を格納する数字
-        result_num = 0
+        print(f"task_name: {task_name}, task_id: {task_id}, priority_id: {priority_id}, deadline: {deadline}")
 
         # プロジェクト一覧更新SQL
         task_update_sql = sql_temp.TASK_UPDATE_SQL.format(
@@ -101,20 +91,78 @@ def task_edit(project_id, process_id):
 
         rows = regain_db_driver.sql_run(task_update_sql)
         rows = regain_db_driver.sql_run("COMMIT")
-        result_num = regain_db_driver.db_close()
-        
+        regain_db_driver.db_close()
+        result = "OK"
+
     except:
         print("Something Failed...") # 本当はここでLoggerを使いたい
+        result = "NG"
 
     # 処理終了
     print(f"処理終了: /{project_id}/{process_id}/edit")
 
-    return jsonify()
+    return jsonify({
+        'status': result
+    })
 
 #既存タスク削除
-@bp.route('/delete', methods=['DELETE'])
+@bp.route('/delete', methods=['POST'])
+
+# 一部タスクを削除できない
+# # おそらく外部キー制約のせい？ログが出ていないので調査できない、いったんここまで調べてPUSH
+
+TODO: エラーを出力し原因調査
+
 def task_delete(project_id, process_id):
-    return jsonify()
+    """
+    既存タスク削除処理。
+    受け取ったtask_idに対応するプロジェクトを削除する。
+
+    jsonファイル例:
+    {
+        "task_id": 12345
+    }
+
+    Returns:
+        json: {
+        'status': "OK" or "NG"
+        }
+    """
+    # 処理開始
+    print(f"処理開始: /{project_id}/{process_id}/delete")
+    
+    # dbDriverの生成
+    regain_db_driver = dbDriver()
+
+    ### プロジェクト名の更新があった場合、これをDBに反映（Update）する。
+    try:
+        # requestにより情報取得
+        params = request.get_json()
+        print(f"params: {params}")
+
+        task_id = params["task_id"]
+        print(f"task_id: {task_id}")
+
+        # プロジェクト一覧更新SQL
+        task_delete_sql = sql_temp.TASK_DELETE_SQL.format(task_id=task_id)
+        rows = regain_db_driver.sql_run(task_delete_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+
+        regain_db_driver.db_close()
+        result = "OK"
+
+    except:
+        print("Something Failed...") # 本当はここでLoggerを使いたい
+        result = "NG"
+    
+    # 処理終了
+    print(f"処理終了: /{project_id}/{process_id}/delete")
+
+    return jsonify(
+                {
+        'status': result
+        }
+    )
 
 #既存タスク選択、タイマー情報表示
 @bp.route('/<int:task_id>', methods=['GET'])
@@ -146,6 +194,63 @@ def timer_get(project_id, process_id, task_id):
                     })
 
 #タイマー情報更新
-@bp.route('/<int:task_id>', methods=['POST'])
+@bp.route('/<int:task_id>', methods=['PUT'])
 def timer_post(project_id, process_id, task_id):
-    return jsonify()
+    """
+    タイマー終了時、DBのcommit_timeを更新する。
+
+    Args:
+        project_id (int): プロジェクト番号
+        process_id (int): プロセス番号
+        task_id (int): タスク番号
+
+    Returns:
+        json: {
+        'status': "OK" or "NG"        
+        }
+    """
+    # 処理開始
+    print(f"処理開始: /{project_id}/{process_id}/{task_id}")
+    
+    # dbDriverの生成
+    regain_db_driver = dbDriver()
+
+    ### タスクの更新があった場合、これをDBに反映（Update）する。
+    try:
+        # requestにより情報取得
+        params = request.get_json()
+
+        task_id = params["task_id"]
+        priority_id = params["priority_id"]
+        commit_time = params.get("commit_time","00:00")
+
+        print(f"task_id: {task_id}, commit_time: {commit_time}")
+
+        TODO: 以下実装
+
+        # プロジェクト一覧更新SQL
+        task_update_sql = sql_temp.TASK_UPDATE_SQL.format(
+            task_name = task_name,
+            task_id = task_id,
+            priority_id = priority_id,
+            deadline = deadline
+        )
+
+        rows = regain_db_driver.sql_run(task_update_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+        regain_db_driver.db_close()
+        result = "OK"
+
+    except:
+        print("Something Failed...") # 本当はここでLoggerを使いたい
+        result = "NG"
+
+    # 処理終了
+    print(f"処理終了: /{project_id}/{process_id}/{task_id}")
+
+    return jsonify(
+                {
+        'status': result
+        }
+    )
+
