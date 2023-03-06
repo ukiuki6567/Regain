@@ -1,4 +1,4 @@
-{% extends "frame.html" %}
+{% extends "menu.html" %}
 {% block content %}
 <blockquote>
 <h3>プロジェクト一覧</h3>
@@ -7,14 +7,14 @@
 <tr>
 <th>project_id</th>
 <th>project_name</th>
-<th>estimate_time</th>
+<th>estimated_time</th>
 <th>passed_time</th>
 </tr>
 {% for project in projects %}
         <tr>
         <td>{{ project.project_id}}</td>
         <td>{{ project.project_name}}</td>
-        <td>{{ project.estimate_time}}</td>
+        <td>{{ project.estimated_time}}</td>
         <td>{{ project.passed_time}}</td>
         </tr>
 {% endfor %}

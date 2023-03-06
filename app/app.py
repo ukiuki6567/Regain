@@ -2,7 +2,7 @@ import sys;
 sys.path.append('app')
 print(sys.path)
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from db_driver import dbDriver
 import project
 
@@ -41,6 +41,7 @@ def project_get():
 
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
+    return render_template('projects.html', title='projects', projects=rows)
     return jsonify(rows)
 
 #プロセスステータス名一覧
@@ -63,4 +64,4 @@ def process_statuses_get():
     return jsonify(rows)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True,host='0.0.0.0', port=80)
