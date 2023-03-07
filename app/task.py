@@ -10,15 +10,20 @@ from sql_template import SQLTemplates as sql_temp
 bp = Blueprint('task', __name__, url_prefix="/<int:process_id>")
 
 #新規タスク作成
-#受信JSON例
-# {
-#   "task_name":"taskのなまえ",
-#   "priority_name":"低",
-#   "estimated_time":"24:00",
-#   "deadline":"2023-02-05"
-# }
 @bp.route('/create', methods=['POST'])
 def task_create(project_id, process_id):
+    """
+    新規にタスクを作成する関数。
+    ステータスは初期値となる。
+    Method: POST
+    jsonファイル例:
+    {
+        "task_name":"taskのなまえ",
+        "priority_name":"低",
+        "estimated_time":"24:00",
+        "deadline":"2023-02-05"
+    }
+    """
     params = request.get_json()
     task_name = params["task_name"]
     priority_name = params.get("priority_name")
@@ -29,19 +34,23 @@ def task_create(project_id, process_id):
     #dbDriverの生成
     regain_db_driver = dbDriver()
     
-    #task生成SQL文
-    process_insert_sql = f"""
-                        INSERT INTO
-                            tasks (task_name, process_id, priority_id, estimated_time, deadline)
-                        SELECT
-                            '{task_name}', {process_id}, priority_id, CAST('{estimated_time}' as TIME), CAST('{deadline}' as DATE)
-                        FROM
-                            priorities
-                        WHERE
-                            priority_name = '{priority_name}'
-                        """
-    rows = regain_db_driver.sql_run(process_insert_sql)
-    rows = regain_db_driver.sql_run("COMMIT")
+    try:
+        #task生成SQL文
+        task_insert_sql = sql_temp.TASK_INSERT_SQL.format(
+            task_name = task_name,
+            process_id = process_id,
+            estimated_time = estimated_time,
+            deadline = deadline,
+            priority_name = priority_name
+        )
+        rows = regain_db_driver.sql_run(task_insert_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+    except Exception as e:
+        print ('=== エラー内容 ===')
+        print ('type:' + str(type(e)))
+        print ('args:' + str(e.args))
+        print ('e自身:' + str(e))
+        return jsonify() # 本当はエラーページの表示をしたい
 
     #dbDriverのクローズと200OK返却
     regain_db_driver.db_close()
@@ -119,6 +128,10 @@ def task_delete(project_id, process_id):
 #既存タスク選択、タイマー情報表示
 @bp.route('/<int:task_id>', methods=['GET'])
 def timer_get(project_id, process_id, task_id):
+    """
+    タイマー情報表示。
+    Method: GET
+    """
     #本日の日付取得
     now = datetime.datetime.now()
     now_str = now.strftime("%Y-%m-%d")
@@ -126,24 +139,31 @@ def timer_get(project_id, process_id, task_id):
     #dbDriverの生成とSQL実行
     regain_db_driver = dbDriver()
     
-    #task_name取得
-    rows = regain_db_driver.sql_run("select task_name from tasks where task_id = " + str(task_id))
-    task_name = rows[0]["task_name"]
-    
-    #本日のcommit_time取得
-    rows = regain_db_driver.sql_run("select DATE_FORMAT(commit_time,'%k:%i') as commit_time from commits where task_id = " + str(task_id)
-                                    + " and commit_date = '" + now_str + "'")
-    commit_time = "0:00"                                
-    if(len(rows) != 0) :
-        commit_time = rows[0]["commit_time"]
+    try:
+        #task_name取得
+        task_name_sql = sql_temp.TIMAR_NAME_SELECT_SQL.format(task_id = task_id)
+        rows = regain_db_driver.sql_run(task_name_sql)
+        task_name = rows[0]["task_name"]
+        
+        #本日のcommit_time取得
+        commit_time_sql = sql_temp.TIMER_TIME_SUM_SELECT_SQL.format(
+            task_id = task_id,
+            commit_date = now_str
+        )
+        rows = regain_db_driver.sql_run(commit_time_sql)
+        commit_time = "0:00"                                
+        if(len(rows) != 0) :
+            commit_time = rows[0]["commit_time"]
+    except Exception as e:
+        print ('=== エラー内容 ===')
+        print ('type:' + str(type(e)))
+        print ('args:' + str(e.args))
+        print ('e自身:' + str(e))
+        return jsonify() # 本当はエラーページの表示をしたい
 
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
     return render_template('timer.html', title='timer', task_name = task_name, commit_time = commit_time)
-    return jsonify({
-                        "task_name": task_name,
-                        "commit_time": commit_time,
-                    })
 
 #タイマー情報更新
 @bp.route('/<int:task_id>', methods=['POST'])
