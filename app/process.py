@@ -12,32 +12,41 @@ bp = Blueprint('process', __name__, url_prefix="/<int:project_id>")
 bp.register_blueprint(task.bp)
 
 #新規プロセス作成
-#受信JSON例
-# {
-#   "process_name":"processのなまえ",
-#   "estimated_time":"24:00",
-#   "deadline":"2023-02-05"
-# }
 @bp.route('/create', methods=['POST'])
 def process_create(project_id):
+    """
+    新規にプロセスを作成する関数。
+    ステータスは初期値となる。
+    Method: POST
+    jsonファイル例:
+    {
+        "process_name": "processのなまえ",
+        "deadline":"2023-02-05"
+    }
+    """
     params = request.get_json()
     process_name = params["process_name"]
-    estimated_time = params.get("estimated_time","0:00")
-    estimated_time += ":00"
     deadline = params.get("deadline","0000-00-00")
 
     #dbDriverの生成
     regain_db_driver = dbDriver()
     
-    #process生成SQL文
-    process_insert_sql = f"""
-                        INSERT INTO
-                            processes (process_name, project_id, estimated_time, deadline)
-                        VALUES
-                            ('{process_name}', {project_id}, CAST('{estimated_time}' as TIME), CAST('{deadline}' as DATE))
-                        """
-    rows = regain_db_driver.sql_run(process_insert_sql)
-    rows = regain_db_driver.sql_run("COMMIT")
+    try:
+        #process生成SQL文
+        process_insert_sql = sql_temp.PROCESS_INSERT_SQL.format(
+            process_name = process_name,
+            project_id = project_id,
+            deadline = deadline
+        )
+
+        rows = regain_db_driver.sql_run(process_insert_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+    except Exception as e:
+        print ('=== エラー内容 ===')
+        print ('type:' + str(type(e)))
+        print ('args:' + str(e.args))
+        print ('e自身:' + str(e))
+        return jsonify() # 本当はエラーページの表示をしたい
 
     #dbDriverのクローズと200OK返却
     regain_db_driver.db_close()
@@ -102,52 +111,32 @@ def process_delete(project_id):
 #既存プロセス選択、タスク一覧表示
 @bp.route('/<int:process_id>')
 def task_get(project_id, process_id):
+    """
+    タスク一覧を表示。
+    Method: GET
+    """
     
     #dbDriverの生成
     regain_db_driver = dbDriver()
 
-    #タスク一覧取得SQL
-    task_list_sql = f"""
-                    SELECT
-                        tasks.task_id,
-                        task_name,
-                        DATE_FORMAT(estimated_time,'%k:%i') as estimated_time,
-                        DATE_FORMAT(deadline,'%m/%e') as deadline,
-                        DATE_FORMAT(sec_to_time(IFNULL(sum(time_to_sec(commit_time)),0)),'%k:%i') as passed_time,
-                        status_name,
-                        priority_name
-                    FROM 
-                        tasks
-                        left join commits
-                            on tasks.task_id = commits.task_id
-                        left join task_statuses
-                            on tasks.status_id = task_statuses.status_id
-                        left join priorities
-                            on tasks.priority_id = priorities.priority_id
-                    WHERE 
-                        process_id = {process_id}
-                    GROUP BY
-                        task_id
-                    """
-    tasks = regain_db_driver.sql_run(task_list_sql)
-        
-    #タスクステータス一覧取得SQL
-    name_list_sql = """
-                    SELECT
-                        status_name
-                    FROM
-                        task_statuses
-                    """
-    status_names = regain_db_driver.sql_run(name_list_sql)
-        
-    #優先度一覧取得SQL
-    name_list_sql = """
-                    SELECT
-                        priority_name
-                    FROM
-                        priorities
-                    """
-    priorities = regain_db_driver.sql_run(name_list_sql)
+    try:
+        #タスク一覧取得SQL
+        task_select_sql = sql_temp.TASK_SELECT_SQL.format(
+            process_id = process_id
+        )
+        tasks = regain_db_driver.sql_run(task_select_sql)
+            
+        #タスクステータス一覧取得
+        status_names = regain_db_driver.sql_run(sql_temp.TASK_STATUS_NAME_SELECT_SQL)
+            
+        #優先度一覧取得
+        priorities = regain_db_driver.sql_run(sql_temp.TASK_PRIORITY_SELECT_SQL)
+    except Exception as e:
+        print ('=== エラー内容 ===')
+        print ('type:' + str(type(e)))
+        print ('args:' + str(e.args))
+        print ('e自身:' + str(e))
+        return jsonify() # 本当はエラーページの表示をしたい
 
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
