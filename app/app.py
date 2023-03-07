@@ -35,7 +35,8 @@ def project_get():
 
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
-    return render_template('projects.html', title='projects', projects=rows)
+    # return render_template('projects.html', title='projects', projects=rows)
+    return 200
 
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0', port=80)
