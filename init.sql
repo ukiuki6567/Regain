@@ -26,6 +26,7 @@ CREATE TABLE priorities(
 CREATE TABLE projects(
     project_id INT AUTO_INCREMENT,
     project_name VARCHAR(20) NOT NULL,
+    estimated_time TIME NOT NULL DEFAULT "0:00:00",
     PRIMARY KEY (project_id),
     INDEX (project_id)
 ) ENGINE = InnoDB;
@@ -35,10 +36,11 @@ CREATE TABLE processes(
     process_name VARCHAR(20) NOT NULL,
     status_id INT NOT NULL DEFAULT 1,
     project_id INT NOT NULL,
+    estimated_time TIME NOT NULL DEFAULT "0:00:00",
     deadline DATE NOT NULL,
     PRIMARY KEY (process_id),
-    FOREIGN KEY (status_id) REFERENCES process_statuses(status_id),
-    FOREIGN KEY (project_id) REFERENCES projects(project_id),
+    FOREIGN KEY (status_id) REFERENCES process_statuses(status_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX (process_id)
 ) ENGINE = InnoDB;
 
@@ -51,9 +53,9 @@ CREATE TABLE tasks(
     estimated_time TIME NOT NULL DEFAULT "0:00:00",
     deadline DATE NOT NULL,
     PRIMARY KEY (task_id),
-    FOREIGN KEY (status_id) REFERENCES task_statuses(status_id),
-    FOREIGN KEY (process_id) REFERENCES processes(process_id),
-    FOREIGN KEY (priority_id) REFERENCES priorities(priority_id),
+    FOREIGN KEY (status_id) REFERENCES task_statuses(status_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (process_id) REFERENCES processes(process_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (priority_id) REFERENCES priorities(priority_id) ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX (task_id)
 ) ENGINE = InnoDB;
 
@@ -63,11 +65,9 @@ CREATE TABLE commits(
     commit_date DATE NOT NULL,
     commit_time TIME NOT NULL,
     PRIMARY KEY (commit_id),
-    FOREIGN KEY (task_id) REFERENCES tasks(task_id),
+    FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX (commit_id)
 ) ENGINE = InnoDB;
-
-GRANT SELECT, UPDATE, INSERT, DELETE ON regain.* TO "regain_app" IDENTIFIED BY "regain_app";
 
 /* パラメータデータの投入(仮) */
 INSERT INTO process_statuses(
