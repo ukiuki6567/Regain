@@ -26,7 +26,6 @@ CREATE TABLE priorities(
 CREATE TABLE projects(
     project_id INT AUTO_INCREMENT,
     project_name VARCHAR(20) NOT NULL,
-    estimated_time TIME NOT NULL DEFAULT "0:00:00",
     PRIMARY KEY (project_id),
     INDEX (project_id)
 ) ENGINE = InnoDB;
@@ -36,7 +35,6 @@ CREATE TABLE processes(
     process_name VARCHAR(20) NOT NULL,
     status_id INT NOT NULL DEFAULT 1,
     project_id INT NOT NULL,
-    estimated_time TIME NOT NULL DEFAULT "0:00:00",
     deadline DATE NOT NULL,
     PRIMARY KEY (process_id),
     FOREIGN KEY (status_id) REFERENCES process_statuses(status_id) ON DELETE CASCADE ON UPDATE CASCADE,
