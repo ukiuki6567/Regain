@@ -69,6 +69,8 @@ CREATE TABLE commits(
     INDEX (commit_id)
 ) ENGINE = InnoDB;
 
+GRANT SELECT, UPDATE, INSERT, DELETE ON regain.* TO "regain_app" IDENTIFIED BY "regain_app";
+
 /* パラメータデータの投入(仮) */
 INSERT INTO process_statuses(
     status_name
