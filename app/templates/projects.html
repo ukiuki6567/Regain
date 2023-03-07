@@ -7,7 +7,7 @@
   </div>
   <div class="row justify-content-center">
     <div class="col-8 text-center">
-      <table class="table">
+      <table class="table" data-link="row">
         <thead class="table-info">
           <tr>
             <th style="width: 10%" scope="col"></th>
@@ -17,24 +17,16 @@
           </tr>
         </thead>
         <tbody>
+          {% for project in projects %}
           <tr>
-            <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks"></th>
-            <td>プロジェクトA</td>
-            <td>0:00</td>
-            <td>0:00</td>
+            <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks" value="{{ project.project_id }}"></th>
+            <a href="{{ url_for('project_get', project_id=project.project_id) }}">
+            <td>{{ project.project_name }}</td>
+            <td>{{ project.estimated_time }}</td>
+            <td>{{ project.passed_time }}</td>
+            </a>
           </tr>
-          <tr>
-            <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks"></th>
-            <td>プロジェクトB</td>
-            <td>10:00</td>
-            <td>3:30</td>
-          </tr>
-          <tr>
-            <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks"></th>
-            <td>プロジェクトC</td>
-            <td>9:00</td>
-            <td>10:00</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
