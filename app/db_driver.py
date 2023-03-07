@@ -3,7 +3,7 @@ import mysql.connector
 class dbDriver:
     conection = ""
     def __init__(self):
-        host_aa='localhost'
+        host_aa='Regain-db'
         data_base = 'regain'
         user_aa ='regain_app'
         password_aa = 'regain_app'
