@@ -1,7 +1,6 @@
 # SQLのテンプレートを格納する部分
 
 class SQLTemplates():
-
     PROCESS_UPDATE_SQL = """
     UPDATE
         processes
@@ -19,7 +18,7 @@ class SQLTemplates():
         priority_id = {priority_id},
         deadline = '{deadline}'
     WHERE
-        task_id = {task_id}    
+        task_id = {task_id}  
     """
 
     PROJECT_INSERT_SQL= """

@@ -56,6 +56,11 @@ def task_create(project_id, process_id):
     regain_db_driver.db_close()
     return jsonify()
 
+
+
+
+
+
 #既存タスク編集
 @bp.route('/edit', methods=['POST'])
 def task_edit(project_id, process_id):
