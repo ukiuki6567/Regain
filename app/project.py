@@ -109,7 +109,7 @@ def project_edit():
     return jsonify()
 
 #既存プロジェクト削除
-@bp.route('/delete', methods=['POST'])
+@bp.route('/delete', methods=['DELETE'])
 def project_delete():
     """
     既存プロジェクト削除処理。

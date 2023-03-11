@@ -104,7 +104,7 @@ def process_edit(project_id):
     return jsonify()
 
 #既存プロセス削除
-@bp.route('/delete', methods=['POST'])
+@bp.route('/delete', methods=['DELETE'])
 def process_delete(project_id):
     """
     既存プロセス削除処理。
