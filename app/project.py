@@ -109,9 +109,55 @@ def project_edit():
     return jsonify()
 
 #既存プロジェクト削除
-@bp.route('/delete', methods=['DELETE'])
+@bp.route('/delete', methods=['POST'])
 def project_delete():
-    return jsonify()
+    """
+    既存プロジェクト削除処理。
+    受け取ったproject_idに対応するプロジェクトを削除する。
+
+    jsonファイル例:
+    {
+        "project_id": 12345
+    }
+
+    Returns:
+        200(OK) or 500(NG)
+    """
+    # 処理開始
+    print("処理開始: /delete")
+    
+    # dbDriverの生成
+    regain_db_driver = dbDriver()
+
+    ### プロジェクト名の更新があった場合、これをDBに反映（Update）する。
+    try:
+        # requestにより情報取得
+        params = request.get_json()
+        print(f"params: {params}")
+
+        project_id = params["project_id"]
+        print(f"project_id: {project_id}")
+
+        # プロジェクト一覧更新SQL
+        project_delete_sql = sql_temp.PROJECT_DELETE_SQL.format(project_id=project_id)
+        rows = regain_db_driver.sql_run(project_delete_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+
+        regain_db_driver.db_close()
+        return f"Project with project_id: {project_id} deleted.", 200
+
+    except Exception as e:
+        print(f"Error deleting project: {e}") # 本当はここでLoggerを使いたい
+        return f"Error deleting project with taproject_idsk_id: {project_id}.", 500
+    
+    # 処理終了
+    print(f"処理終了: /delete")
+
+    return jsonify(
+        {
+        'status': result
+        }
+    )
 
 #既存プロジェクト選択、プロセス一覧表示
 @bp.route('/<int:project_id>')
