@@ -168,4 +168,49 @@ def timer_get(project_id, process_id, task_id):
 #タイマー情報更新
 @bp.route('/<int:task_id>', methods=['POST'])
 def timer_post(project_id, process_id, task_id):
+    """
+    対象タスクのcommit時間を更新する関数。
+    Method: POST
+    jsonファイル例:
+    {
+        "commit_time": "00:12"
+    }
+    """
+    
+    # dbDriverの生成
+    regain_db_driver = dbDriver()
+
+    ### タスクの更新があった場合、これをDBに反映（Update）する。
+    try:
+        # requestにより情報取得
+        params = request.get_json()
+        commit_time = params.get("commit_time","0:00")
+        commit_time += ":00"
+        #本日の日付取得
+        now = datetime.datetime.now()
+        now_str = now.strftime("%Y-%m-%d")
+        print(f"commit_date: {now_str}, commit_time: {commit_time}, task_id: {task_id}")
+        
+        # HTTP200OKなどの結果を格納する数字
+        result_num = 0
+
+        # プロジェクト一覧更新SQL
+        timer_update_sql = sql_temp.TIMER_UPDATE_SQL.format(
+            commit_date = now_str,
+            commit_time = commit_time,
+            task_id = task_id
+        )
+        # print(task_update_sql)
+
+        rows = regain_db_driver.sql_run(timer_update_sql)
+        rows = regain_db_driver.sql_run("COMMIT")
+        result_num = regain_db_driver.db_close()
+        
+    except Exception as e:
+        print ('=== エラー内容 ===')
+        print ('type:' + str(type(e)))
+        print ('args:' + str(e.args))
+        print ('e自身:' + str(e))
+        return jsonify() # 本当はエラーページの表示をしたい
+
     return jsonify()
