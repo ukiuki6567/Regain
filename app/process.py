@@ -66,6 +66,9 @@ def process_edit(project_id):
         "process_id": 12345
         "process_name": "ほげほげ"
     }
+
+    Return:
+        200(OK) or 500(NG)
     """
 
     # 処理開始
@@ -81,9 +84,6 @@ def process_edit(project_id):
 
         process_name, process_id = params["process_name"], params["process_id"]
         print(f"project_name: {process_name}, project_id: {process_id}")
-        
-        # HTTP200OKなどの結果を格納する数字
-        result_num = 0
 
         # プロジェクト一覧更新SQL
         process_update_sql = sql_temp.PROCESS_UPDATE_SQL.format(
@@ -93,15 +93,14 @@ def process_edit(project_id):
 
         rows = regain_db_driver.sql_run(process_update_sql)
         rows = regain_db_driver.sql_run("COMMIT")
-        result_num = regain_db_driver.db_close()
+        
+        regain_db_driver.db_close()
+        return f"Process with process_id: {process_id} edited.", 200
     
-    except:
-        print("Something Failed...") # 本当はここでLoggerを使いたい
+    except Exception as e:
+        print("Error editing process: {e}") # 本当はここでLoggerを使いたい
+        return f"Error editing process with process_id: {process_id}.\nError: {str(e)}", 500
 
-    # 処理終了
-    print(f"処理終了: /{project_id}/edit")
-
-    return jsonify()
 
 #既存プロセス削除
 @bp.route('/delete', methods=['DELETE'])
@@ -144,7 +143,7 @@ def process_delete(project_id):
 
     except Exception as e:
         print("Error deleting process: {e}") # 本当はここでLoggerを使いたい
-        return f"Error deleting process with process_id: {process_id}.", 500
+        return f"Error deleting process with process_id: {process_id}.\nError: {str(e)}", 500
 
 #既存プロセス選択、タスク一覧表示
 @bp.route('/<int:process_id>')

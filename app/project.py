@@ -63,6 +63,9 @@ def project_edit():
         "project_id": 12345
         "project_name": "ほげほげ"
     }
+
+    Return:
+        200(OK) or 500(NG) 
     """
 
     # 処理開始
@@ -75,38 +78,26 @@ def project_edit():
     try:
         # requestにより情報取得
         params = request.get_json()
-        print(f"params: {params}")
 
         project_name = params["project_name"]
         project_id = params["project_id"]
         print(f"project_name: {project_name}, project_id: {project_id}")
-        
-        # HTTP200OKなどの結果を格納する数字
-        result_num = 0
 
         # プロジェクト一覧更新SQL
-        project_update_sql = f"""
-                                UPDATE
-                                    projects
-                                SET
-                                    project_name = '{project_name}'
-                                WHERE
-                                    project_id = {project_id}
-                            """
+        project_update_sql = sql_temp.PROJECT_UPDATE_SQL.format(
+            project_name = project_name,
+            project_id = project_id
+        )
         rows = regain_db_driver.sql_run(project_update_sql)
         rows = regain_db_driver.sql_run("COMMIT")
 
-        result_num = regain_db_driver.db_close()
-        
-        print(f"result: {result_num}")
+        regain_db_driver.db_close()
+        return f"Project with project_id: {project_id} edited.", 200
     
-    except:
-        print("Something Failed...") # 本当はここでLoggerを使いたい
-    
-    # return render_template('projects.html', title='projects', projects=rows), result_num
-    # 処理終了
-    print(f"処理終了: /edit")
-    return jsonify()
+    except Exception as e:
+        print("Error editing project: {e}") # 本当はここでLoggerを使いたい
+        return f"Error editing project with project_id: {project_id}.\nError: {str(e)}", 500
+
 
 #既存プロジェクト削除
 @bp.route('/delete', methods=['DELETE'])
@@ -120,7 +111,7 @@ def project_delete():
         "project_id": 12345
     }
 
-    Returns:
+    Return:
         200(OK) or 500(NG)
     """
     # 処理開始
@@ -148,16 +139,7 @@ def project_delete():
 
     except Exception as e:
         print(f"Error deleting project: {e}") # 本当はここでLoggerを使いたい
-        return f"Error deleting project with taproject_idsk_id: {project_id}.", 500
-    
-    # 処理終了
-    print(f"処理終了: /delete")
-
-    return jsonify(
-        {
-        'status': result
-        }
-    )
+        return f"Error deleting project with project_id: {project_id}.\nError: {str(e)}", 500
 
 #既存プロジェクト選択、プロセス一覧表示
 @bp.route('/<int:project_id>')

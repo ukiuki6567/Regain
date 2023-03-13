@@ -70,6 +70,9 @@ def task_edit(project_id, process_id):
         "priority_id": 3,
         "deadline": "2023-02-23"
     }
+
+    Return:
+        200(OK) or 500(NG) 
     """
 
     # 処理開始
@@ -82,17 +85,12 @@ def task_edit(project_id, process_id):
     try:
         # requestにより情報取得
         params = request.get_json()
-        print("hoge")
 
         task_name, task_id = params["task_name"], params["task_id"]
         priority_id = params["priority_id"]
-        print("hoge")
         deadline = params.get("deadline","0000-00-00")
 
         print(f"task_name: {task_name}, task_id: {task_id}, proiroty_id: {priority_id}, deadline: {deadline}")
-        
-        # HTTP200OKなどの結果を格納する数字
-        result_num = 0
 
         # プロジェクト一覧更新SQL
         task_update_sql = sql_temp.TASK_UPDATE_SQL.format(
@@ -101,19 +99,16 @@ def task_edit(project_id, process_id):
             priority_id = priority_id,
             deadline = deadline
         )
-        # print(task_update_sql)
 
         rows = regain_db_driver.sql_run(task_update_sql)
         rows = regain_db_driver.sql_run("COMMIT")
-        result_num = regain_db_driver.db_close()
-        
-    except:
-        print("Something Failed...") # 本当はここでLoggerを使いたい
+        regain_db_driver.db_close()
+        return f"Task with task_id: {task_id} edited.", 200
 
-    # 処理終了
-    print(f"処理終了: /{project_id}/{process_id}/edit")
+    except Exception as e:
+        print("Error editing task: {e}") # 本当はここでLoggerを使いたい
+        return f"Error editing task with task_id: {task_id}.\nError: {str(e)}", 500
 
-    return jsonify()
 
 #既存タスク削除
 @bp.route('/delete', methods=['DELETE'])
@@ -127,7 +122,7 @@ def task_delete(project_id, process_id):
         "task_id": 12345
     }
 
-    Returns:
+    Return:
         200(OK) or 500(NG)
     """
     # 処理開始
@@ -153,7 +148,7 @@ def task_delete(project_id, process_id):
 
     except Exception as e:
         print("Error deleting task: {e}") # 本当はここでLoggerを使いたい
-        return f"Error deleting task with task_id: {task_id}.", 500
+        return f"Error deleting task with task_id: {task_id}.\nError: {str(e)}", 500
 
 
 #既存タスク選択、タイマー情報表示

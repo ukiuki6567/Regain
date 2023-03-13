@@ -1,9 +1,19 @@
 # SQLのテンプレートを格納する部分
 
 class SQLTemplates():
-    ####################
-    ###### UPDATE ######
-    ####################
+    ##########################
+    ###### UPDATE(EDIT) ######
+    ##########################
+    
+    PROJECT_UPDATE_SQL = """
+    UPDATE
+        projects
+    SET
+        project_name = '{project_name}'
+    WHERE
+        project_id = {project_id}
+    """
+    
     PROCESS_UPDATE_SQL = """
     UPDATE
         processes
