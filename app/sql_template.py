@@ -21,6 +21,15 @@ class SQLTemplates():
         task_id = {task_id}  
     """
 
+    TIMER_UPDATE_SQL = """
+    INSERT INTO
+        commits (commit_date, commit_time, task_id)
+    VALUES
+        (CAST('{commit_date}' as DATE), CAST('{commit_time}' as TIME), {task_id})
+    ON DUPLICATE KEY UPDATE
+        commit_time = '{commit_time}'
+    """
+
     PROJECT_INSERT_SQL= """
     INSERT INTO
         projects (project_name)

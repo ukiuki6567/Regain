@@ -65,6 +65,7 @@ CREATE TABLE commits(
     PRIMARY KEY (commit_id),
     FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX (commit_id)
+    UNIQUE (task_id, commit_date)
 ) ENGINE = InnoDB;
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON regain.* TO "regain_app" IDENTIFIED BY "regain_app";
