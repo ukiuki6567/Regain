@@ -1,6 +1,19 @@
 # SQLのテンプレートを格納する部分
 
 class SQLTemplates():
+    ##########################
+    ###### UPDATE(EDIT) ######
+    ##########################
+    
+    PROJECT_UPDATE_SQL = """
+    UPDATE
+        projects
+    SET
+        project_name = '{project_name}'
+    WHERE
+        project_id = {project_id}
+    """
+    
     PROCESS_UPDATE_SQL = """
     UPDATE
         processes
@@ -20,6 +33,10 @@ class SQLTemplates():
     WHERE
         task_id = {task_id}  
     """
+
+    ####################
+    ###### INSERT ######
+    ####################
 
     PROJECT_INSERT_SQL= """
     INSERT INTO
@@ -45,6 +62,10 @@ class SQLTemplates():
     WHERE
         priority_name = '{priority_name}'
     """
+
+    ##################
+    ###### TIME ######
+    ##################
 
     PROJECT_ESTIMATED_TIME_SUM_SELECT_SQL = """
     SELECT
@@ -200,4 +221,28 @@ class SQLTemplates():
     WHERE
         task_id = {task_id}
         AND commit_date = '{commit_date}'
+    """
+
+    ####################
+    ###### DELETE ######
+    ####################
+    PROJECT_DELETE_SQL = """
+    DELETE FROM
+        projects
+    WHERE
+        project_id = {project_id}
+    """
+
+    PROCESS_DELETE_SQL = """
+    DELETE FROM
+        processes
+    WHERE
+        process_id = {process_id}
+    """    
+
+    TASK_DELETE_SQL = """
+    DELETE FROM
+        tasks
+    WHERE
+        task_id = {task_id}
     """
