@@ -1,0 +1,256 @@
+{% extends "menu.html" %}
+{% block article %}
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h2>プロジェクトA 工程一覧</h2>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-8 text-center">
+                <table class="table">
+                    <thead class="table-info">
+                        <tr>
+                            <th rowspan="2" style="width: 5%" scope="col"></th>
+                            <th rowspan="2" style="width: 20%" scope="col">工程</th>
+                            <th rowspan="2" style="width: 10%" scope="col">ステータス</th>
+                            <th rowspan="2" style="width: 10%" scope="col">見積時間</th>
+                            <th rowspan="2" style="width: 10%" scope="col">経過時間</th>
+                            <th rowspan="2" style="width: 10%" scope="col">締切</th>
+                            <th style="width: 5%;background-color:#e0ffc1" scope="col"><span id="day1"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day2"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day3"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day4"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day5"></span></th>
+                        </tr>
+                        <tr>
+                            <th style="width: 5%;background-color:#e0ffc1" scope="col"><span id="day1_whatday"></span>
+                            </th>
+                            <th style="width: 5%" scope="col"><span id="day2_whatday"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day3_whatday"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day4_whatday"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day5_whatday"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="1">
+                            <th scope="row"> <input class="form-check-input" type="radio" name="selectProcesses"></th>
+                            <td>要件定義</td>
+                            <td>着手</td>
+                            <td>3:00</td>
+                            <td>1:00</td>
+                            <td>3/20</td>
+                            <td>1:00</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr id="2">
+                            <th scope="row"> <input class="form-check-input" type="radio" name="selectProcesses"></th>
+                            <td>設計</td>
+                            <td>完了</td>
+                            <td>3:00</td>
+                            <td>3:00</td>
+                            <td>3/21</td>
+                            <td>0:00</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr id="3">
+                            <th scope="row"> <input class="form-check-input" type="radio" name="selectProcesses"></th>
+                            <td>開発</td>
+                            <td>未着手</td>
+                            <td>3:00</td>
+                            <td>2:00</td>
+                            <td>3/22</td>
+                            <td>0:00</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr id="4">
+                            <th scope="row"> <input class="form-check-input" type="radio" name="selectProcesses"></th>
+                            <td>試験</td>
+                            <td>着手</td>
+                            <td>3:00</td>
+                            <td>2:00</td>
+                            <td>2/13</td>
+                            <td>0:00</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr id="5">
+                            <th scope="row"> <input class="form-check-input" type="radio" name="selectProcesses"></th>
+                            <td>運用</td>
+                            <td>着手</td>
+                            <td>6:00</td>
+                            <td>3:00</td>
+                            <td>3/17</td>
+                            <td>0:00</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr id="6">
+                            <th scope="row"> <input class="form-check-input" type="radio" name="selectProcesses"></th>
+                            <td>保守</td>
+                            <td>着手</td>
+                            <td>8:00</td>
+                            <td>1:00</td>
+                            <td>3/21</td>
+                            <td>0:00</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr id="7">
+                            <th scope="row"> <input class="form-check-input" type="radio" name="selectProcesses"></th>
+                            <td>aaa</td>
+                            <td>着手</td>
+                            <td>8:00</td>
+                            <td>0:00</td>
+                            <td>3/21</td>
+                            <td>0:00</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- ここからモーダル -->
+    <div id="Modal" class="modal">
+        <div class="container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>工程新規作成</h2>
+                    <span class="modalClose">✕</span>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div>
+                            <label for="InputProcess" class="form-label">工程名</label>
+                            <input type="process" class="form-control" id="InputProcess" aria-describedby="processHelp">
+                            <div id="processHelp" class="form-text">入力必須</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
+                            </div>
+                            <div class="col">
+                                <button type="create" class="btn btn-info modalClose">作成</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ここまでモーダル -->
+</body>
+<!-- script for Date and Day of the week -->
+<script>
+    const weeks = ["日", "月", "火", "水", "木", "金", "土"];
+    var now = new Date();
+    for (i = 1; i <= 5; i++) {
+        document.getElementById('day' + i).innerHTML = now.getDate();
+        document.getElementById('day' + i + '_whatday').innerHTML = weeks[now.getDay()];
+        if (now.getDay() == 5) {
+            now.setDate(now.getDate() + 3);
+        }
+        else {
+            now.setDate(now.getDate() + 1);
+        }
+    }
+
+
+    var today = new Date();
+    for (let i = 1; i <= 7; i++) {
+        let collection = document.getElementById(i).children;
+        var deadline_Date = new Date("2023/" + collection[5].innerHTML + " 23:59:59");
+        var estimated_time_Date = new Date("2023/1/1 " + collection[3].innerHTML + ":00");
+        var passed_time_Date = new Date("2023/1/1 " + collection[4].innerHTML + ":00");
+        // console.log(deadline_Date);
+        // Date型からminutes単位に変換
+        var estimated_time_Date_To_Minutes = 60 * estimated_time_Date.getHours() + estimated_time_Date.getMinutes();
+        var passed_time_Date_To_Minutes = 60 * passed_time_Date.getHours() + passed_time_Date.getMinutes();
+        // console.log(estimated_time_Date_To_Minutes);
+        // console.log(passed_time_Date_To_Minutes);
+
+        if (passed_time_Date_To_Minutes == 0) {
+            // 経過時間０で未着手の場合にはを最初に除外しておく。とりあえず変数には0を入れとく
+            day_to_finish = 0;
+        }
+        else if (passed_time_Date_To_Minutes < estimated_time_Date_To_Minutes) {
+            // 経過時間が見積時間を下回り、未完了なはずの場合
+            day_to_finish = Math.ceil(estimated_time_Date_To_Minutes / passed_time_Date_To_Minutes);
+           // console.log(day_to_finish);
+        }
+        else {
+            // 経過時間が見積時間を上回り、すでに完了しているはずの場合。何か色とか付けるべき？
+            day_to_finish = 0;
+        }
+        console.log(day_to_finish);
+        console.log(parseInt((deadline_Date-today) / 1000 / 60 / 60 / 24));
+        var day_to_deadline = parseInt((deadline_Date-today) / 1000 / 60 / 60 / 24);
+        // day_to_finish とdeadline_Dateで比較
+        for (j = 1; j <= Math.min(day_to_finish, 5); j++) {
+            if(day_to_finish <=  day_to_deadline){
+                collection[5 + j].style = 'background-color:#a9ceec';
+            }
+            else{
+                if(j <  day_to_deadline){
+                    collection[5 + j].style = 'background-color:#a9ceec';
+                }
+                else{
+                    collection[5 + j].style = 'background-color:#FADBDA';
+                    collection[5].style = 'background-color:#FADBDA';
+                }
+
+            }
+
+         //  if (deadline_Date.getDate() == document.getElementById('day' + j ).innerHTML) {
+           //   collection[5 + j].style = "border-right:solid";
+          
+         //   }
+        }
+
+
+        // 今日の取り組み時間での塗分け
+        switch (collection[6].innerHTML) {
+            case '0:00':
+                if (collection[4].innerHTML == '0:00') {
+                    collection[6].style = 'background-color:yellow';
+                }
+                else {
+                    collection[6].style = 'background-color:#e0ffc1';
+                }
+                break;
+            default:
+                collection[6].style = 'background-color:#0095d9';
+        }
+
+        // 締め切りを過ぎているかの判定
+        if (deadline_Date < today) {
+            for (j = 0; j <= 10; j++) {
+                collection[j].style = 'background-color:red';
+            }
+        }
+
+    }
+
+</script>
+
+</body>
+{% endblock %}
