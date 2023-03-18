@@ -220,7 +220,7 @@
     };
     //POST通信
     url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
-    doPost(url + '/delete', json_data);
+    doDelete(url + '/delete', json_data);
     //自分自身へリダイレクト
     location.href = url;
   });
@@ -238,8 +238,8 @@
     xhr.send(json_text);
   }
 
-//データをPOST通信する
-function doPost(url, date) {
+//データをDELETE通信する
+function doDelete(url, date) {
   var json_text = JSON.stringify(date);//Json文字列へ変換
   var xhr = new XMLHttpRequest();//インスタンス作成
   xhr.onload = () => {//レスポンスを受け取った時の処理、今は何もせず
