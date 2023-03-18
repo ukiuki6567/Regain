@@ -26,16 +26,13 @@ def project_get():
             project_estimated_time_sum = sql_temp.PROJECT_ESTIMATED_TIME_SUM_SELECT_SQL
         )
         rows = regain_db_driver.sql_run(project_list_sql)
+        
+        regain_db_driver.db_close()
+        return render_template('projects.html', title='projects', projects=rows)
+        
     except Exception as e:
-        print ('=== エラー内容 ===')
-        print ('type:' + str(type(e)))
-        print ('args:' + str(e.args))
-        print ('e自身:' + str(e))
-        return jsonify() # 本当はエラーページの表示をしたい
-
-    #dbDriverのクローズと値返却
-    regain_db_driver.db_close()
-    return render_template('projects.html', title='projects', projects=rows)
+        print("Error getting project: {e}") # 本当はここでLoggerを使いたい
+        return f"Error getting project.\nError: {str(e)}", 500
 
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0', port=80)

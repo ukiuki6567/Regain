@@ -38,20 +38,14 @@ def process_create(project_id):
             project_id = project_id,
             deadline = deadline
         )
-
         rows = regain_db_driver.sql_run(process_insert_sql)
         rows = regain_db_driver.sql_run("COMMIT")
+        regain_db_driver.db_close()
+        return f"Process with process_name: {process_name} created.", 200
+    
     except Exception as e:
-        print ('=== エラー内容 ===')
-        print ('type:' + str(type(e)))
-        print ('args:' + str(e.args))
-        print ('e自身:' + str(e))
-        return jsonify() # 本当はエラーページの表示をしたい
-
-    #dbDriverのクローズと200OK返却
-    regain_db_driver.db_close()
-    return jsonify()
-
+        print("Error creating process: {e}") # 本当はここでLoggerを使いたい
+        return f"Error creating process with process_name: {process_name}.\nError: {str(e)}", 500
 
 
 #既存プロセス編集
@@ -168,14 +162,11 @@ def task_get(project_id, process_id):
             
         #優先度一覧取得
         priorities = regain_db_driver.sql_run(sql_temp.TASK_PRIORITY_SELECT_SQL)
+        
+        #dbDriverのクローズと値返却
+        regain_db_driver.db_close()
+        return render_template('tasks.html', title='tasks', tasks=tasks, status_names = status_names, priorities = priorities)
+    
     except Exception as e:
-        print ('=== エラー内容 ===')
-        print ('type:' + str(type(e)))
-        print ('args:' + str(e.args))
-        print ('e自身:' + str(e))
-        return jsonify() # 本当はエラーページの表示をしたい
-
-    #dbDriverのクローズと値返却
-    regain_db_driver.db_close()
-    # return jsonify(rows)
-    return render_template('tasks.html', title='tasks', tasks=tasks, status_names = status_names, priorities = priorities)
+        print("Error getting task: {e}") # 本当はここでLoggerを使いたい
+        return f"Error getting task with process_id: {process_id}.\nError: {str(e)}", 500
