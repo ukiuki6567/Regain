@@ -65,7 +65,7 @@ CREATE TABLE commits(
     PRIMARY KEY (commit_id),
     FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX (commit_id)
-    UNIQUE (task_id, commit_date)
+    UNIQUE unique_task_id_cammit_date_index (task_id, commit_date)
 ) ENGINE = InnoDB;
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON regain.* TO "regain_app" IDENTIFIED BY "regain_app";
@@ -127,5 +127,5 @@ INSERT INTO commits(
 ), (
     1, "2023-02-12", "1:22:00"
 ), (
-    1, "2023-02-12", "0:45:00"
+    1, "2023-02-14", "0:45:00"
 );

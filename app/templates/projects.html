@@ -163,24 +163,25 @@
     })
   });
 
-//作成ボタンクリック時の挙動
-//プロジェクト名が未入力ならなにもしない
-//プロジェクト名が記載されてたらPOST処理をして、自分自身へリダイレクト
-btnCreate.addEventListener('click', () => {
-  if(inputNewTitle.value == ""){
-    return;
-  }
-  // 送信データ用意
-  // 例:
-  // {
-  //     "project_name": "projectのなまえ"
-  // }
-  json_data = {'project_name': inputNewTitle.value};
-  //POST通信
-  doPost(document.URL + '/create', json_data);
-  //自分自身へリダイレクト
-  location.href = document.URL;
-});
+  //作成ボタンクリック時の挙動
+  //プロジェクト名が未入力ならなにもしない
+  //プロジェクト名が記載されてたらPOST処理をして、自分自身へリダイレクト
+  btnCreate.addEventListener('click', () => {
+    if(inputNewTitle.value == ""){
+      return;
+    }
+    // 送信データ用意
+    // 例:
+    // {
+    //     "project_name": "projectのなまえ"
+    // }
+    json_data = {'project_name': inputNewTitle.value};
+    //POST通信
+    url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
+    doPost(url + 'create', json_data);
+    //自分自身へリダイレクト
+    location.href = url;
+  });
 
   //編集ボタンクリック時の挙動
   //プロジェクト名が未入力ならなにもしない
@@ -200,17 +201,15 @@ btnCreate.addEventListener('click', () => {
       'project_name': inputEditTitle.value
     };
     //POST通信
-    doPost(document.URL + '/edit', json_data);
+    url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
+    doPost(url + 'edit', json_data);
     //自分自身へリダイレクト
-    location.href = document.URL;
+    location.href = url;
   });
 
   //削除ボタンクリック時の挙動
   //POST処理をして、自分自身へリダイレクト
-  btnEdit.addEventListener('click', () => {
-    if(inputEditTitle.value == ""){
-      return;
-    }
+  btnDelete.addEventListener('click', () => {
     // 送信データ用意
     // 例:
     // {
@@ -220,9 +219,10 @@ btnCreate.addEventListener('click', () => {
       'project_id': projectId
     };
     //POST通信
-    doPost(document.URL + '/delete', json_data);
+    url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
+    doPost(url + '/delete', json_data);
     //自分自身へリダイレクト
-    location.href = document.URL;
+    location.href = url;
   });
 
   //データをPOST通信する
@@ -237,6 +237,19 @@ btnCreate.addEventListener('click', () => {
     xhr.setRequestHeader("Content-Type", "application/json");//データタイプJSONに設定
     xhr.send(json_text);
   }
+
+//データをPOST通信する
+function doPost(url, date) {
+  var json_text = JSON.stringify(date);//Json文字列へ変換
+  var xhr = new XMLHttpRequest();//インスタンス作成
+  xhr.onload = () => {//レスポンスを受け取った時の処理、今は何もせず
+  };
+  xhr.onerror = () => {//エラーが起きた時の処理、今は何もせず
+  };
+  xhr.open("DELETE", url, false);//第三引数falseで同期（応答をまつ）。
+  xhr.setRequestHeader("Content-Type", "application/json");//データタイプJSONに設定
+  xhr.send(json_text);
+}
 </script>
 
 {% endblock %}
