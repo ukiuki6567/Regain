@@ -125,6 +125,15 @@ class SQLTemplates():
         project_id
     """
 
+    PROJECT_NAME_SELECT_SQL="""
+    SELECT
+        project_name
+    FROM
+        projects
+    WHERE
+        project_id = {project_id}
+    """
+
     PROCESS_ESTIMATED_TIME_SUM_SELECT_SQL="""
                             SELECT
                                 processes.process_id,
