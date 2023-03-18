@@ -154,6 +154,9 @@ def process_get(project_id):
     
 
     try:
+        #プロジェクト名取得
+        project_name = regain_db_driver.sql_run(sql_temp.PROJECT_NAME_SELECT_SQL.format(project_id = project_id))
+
         #本日の日付取得
         now = datetime.datetime.now()
         now_str = now.strftime("%Y-%m-%d")
@@ -185,6 +188,7 @@ def process_get(project_id):
                 required_day = one_process["estimated_time_sec"] / passed_time_par_day
                 predict_time = required_day - one_process["passed_date"]
             one_process["predict_time"] = math.ceil(predict_time)
+            one_process["worktime_today"] = one_process["today_commit_time"]
             
         #プロセスステータス一覧取得SQL
         status_names = regain_db_driver.sql_run(sql_temp.PROCESS_STATUS_NAME_SELECT_SQL)
@@ -197,4 +201,4 @@ def process_get(project_id):
     
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
-    return render_template('processes.html', title='processes', processes=processes, status_names = status_names)
+    return render_template('processes.html', title='processes', processes=processes, status_names = status_names, project_name=project_name)
