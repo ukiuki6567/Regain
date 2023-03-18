@@ -1,0 +1,130 @@
+{% extends "frame.html" %}
+
+{% block content %}
+
+<div class="container">
+  <div class="bg-light rounded-3 p-5 my-5">
+    <div class="row">
+      <h1 id="task_name" class="text-light p-3 rounded-3 text-center" style="background-color: #002d5b">{{task_name}}
+      </h1>
+    </div>
+    <div class="row m-3">
+      <div id="time" class="text-center" style="font-size: 200px; color: #002d5b;">0:00</div>
+    </div>
+    <div class="row d-flex justify-content-evenly mb-4" id="buttons">
+      <button class="btn btn-outline-primary w-25 py-3 fs-3" id="start">開始</button>
+      <button class="btn btn-outline-danger w-25 py-2 fs-3" id="stop">終了</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const time = document.getElementById('time');
+  const startButton = document.getElementById('start');
+  const stopButton = document.getElementById('stop');
+  let interval = 2000;
+
+  // 初期時間(ミリ秒)
+  let commitTime = 0;
+  let commitTimeHours = Number("{{commit_time}}".split(':')[0]);
+  let commitTimeMinutes = Number("{{commit_time}}".split(':')[1]);
+  commitTime += commitTimeHours * 60 * 60 * 1000;
+  commitTime += commitTimeMinutes * 60 * 1000;
+
+  // 開始時間(ミリ秒)
+  let startTime = 0;
+  // 停止時間(ミリ秒)
+  let stopTime = 0;
+  // 表示時間(ミリ秒)
+  let currentTime = commitTime;
+
+  // 表示用変数
+  let h = "";
+  let m = "";
+
+  // タイムアウトID
+  let timeoutID;
+
+  let isDisplaySeparator = true;  // コロン表示/表示
+  let isCommitting = false;       // 動作中フラグ
+
+  // 初期表示
+  time.textContent = String(commitTimeHours).padStart(2, '0') + ":" + String(commitTimeMinutes).padStart(2, '0');
+
+  // 時間を表示する関数
+  function displayTime() {
+    
+    currentTime = commitTime + (Date.now() - startTime);
+    h = String(Math.floor(currentTime/60/60/1000)).padStart(2, '0');
+    m = String(Math.floor(currentTime/60/1000)).padStart(2, '0');
+
+    //  time.textContent = `${h}:${m}:${s}.${ms}`;
+    if (isDisplaySeparator) {
+      time.textContent = `${h}:${m}`;
+      interval = 500;
+    } else {
+      time.textContent = `${h} ${m}`;
+      interval = 500;
+    }
+    isDisplaySeparator = !isDisplaySeparator;
+    timeoutID = setTimeout(displayTime, interval);
+  }
+
+  // スタートボタンがクリックされたら時間を進める
+  startButton.addEventListener('click', () => {
+
+    if (isCommitting) {
+      startButton.innerText = "再開";
+      time.textContent = `${h}:${m}`;
+      commitTime = currentTime;
+      clearTimeout(timeoutID);
+    } else {
+      startTime = Date.now();
+      startButton.innerText = "中断";
+      displayTime();
+    }
+
+    isCommitting = !isCommitting;
+    startButton.classList.toggle('btn-outline-primary');
+    startButton.classList.toggle('btn-outline-secondary');
+
+  });
+
+  // ストップボタンがクリックされたら時間を止める
+  //POST処理をして、タスク一覧ページへリダイレクト
+  stopButton.addEventListener('click', () => {
+
+    commitTime = currentTime;
+    clearTimeout(timeoutID);
+
+    // 送信データ用意
+    // 例:
+    // {
+    //     "commit_time": "00:12"
+    // }
+    h = String(Math.floor(commitTime/60/60/1000)).padStart(2, '0');
+    m = String(Math.floor(commitTime/60/1000)).padStart(2, '0');
+    json_data = {'commit_time': `${h}:${m}`};
+    //POST通信
+    doPost(document.URL, json_data);
+    //タスク一覧へリダイレクト
+    redirect_url = document.URL.match(/.*?\/\/.*?\/.*?\/[0-9]*/)[0];//スラッシュ4個目と後ろの数字まで切り取り
+    location.href = redirect_url;
+  });
+
+  //データをPOST通信する
+  function doPost(url, date) {
+    var json_text = JSON.stringify(date);//Json文字列へ変換
+    var xhr = new XMLHttpRequest();//インスタンス作成
+    xhr.onload = () => {//レスポンスを受け取った時の処理、今は何もせず
+    };
+    xhr.onerror = () => {//エラーが起きた時の処理、今は何もせず
+    };
+    xhr.open("POST", url, false);//第三引数falseで同期（応答をまつ）。
+    xhr.setRequestHeader("Content-Type", "application/json");//データタイプJSONに設定
+    xhr.send(json_text);
+  }
+
+</script>
+
+{% endblock %}

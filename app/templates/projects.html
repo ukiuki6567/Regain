@@ -1,0 +1,242 @@
+{% extends "menu.html" %}
+{% block article %}
+
+<div class="container">
+  <div class="row">
+    <h2>プロジェクト一覧</h2>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-8 text-center">
+      <table class="table table-hover">
+        <thead class="table-info">
+          <tr>
+            <th style="width: 10%" scope="col"></th>
+            <th style="width: 30%" scope="col">プロジェクト名</th>
+            <th style="width: 30%" scope="col">予測時間</th>
+            <th style="width: 30%" scope="col">経過時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for project in projects %}
+          <tr>
+            <th scope="row"> <input class="form-check-input" type="radio" name="selectRecords" value="{{ project.project_id }},{{ project.project_name }}"></th>
+            <td style="cursor:pointer;" onclick="location.href='{{ project.project_id }}'">{{ project.project_name }}</td>
+            <td style="cursor:pointer;" onclick="location.href='{{ project.project_id }}'">{{ project.estimated_time }}</td>
+            <td style="cursor:pointer;" onclick="location.href='{{ project.project_id }}'">{{ project.passed_time }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ここからモーダル -->
+<div id="mdlNewRecord" class="modal">
+  <div class="container">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>プロジェクト新規作成</h2>
+        <span class="modalClose">✕</span>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div>
+            <label for="InputProject" class="form-label">プロジェクト名</label>
+            <input type="text" class="form-control" id="inputNewTitle" aria-describedby="projectHelp">
+            <div id="projectHelp" class="form-text">入力必須</div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button type="button" class="btn btn-info modalClose">キャンセル</button>
+            </div>
+            <div class="col">
+              <button id="btnCreate" type="button" class="btn btn-info modalClose">作成</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="mdlEditRecord" class="modal">
+  <div class="container">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>プロジェクト編集</h2>
+        <span class="modalClose">✕</span>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div>
+            <label for="InputProject" class="form-label selected-project-name">プロジェクト名</label>
+            <input type="text" class="form-control" id="inputEditTitle" aria-describedby="projectHelp">
+            <div id="projectHelp" class="form-text">入力必須</div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button type="button" class="btn btn-info modalClose">キャンセル</button>
+            </div>
+            <div class="col">
+              <button id="btnEdit" type="button" class="btn btn-info modalClose">更新</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="mdlDelRecord" class="modal">
+  <div class="container">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>プロジェクト削除</h2>
+        <span class="modalClose">✕</span>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div>
+            <label for="InputProject" class="form-label selected-project-name">プロジェクト名</label>
+            <div id="projectHelp" class="form-text">入力必須</div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button type="button" class="btn btn-info modalClose">キャンセル</button>
+            </div>
+            <div class="col">
+              <button id="btnDelete" type="button" class="btn btn-info modalClose">削除</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ここまでモーダル -->
+
+<!-- モーダルの処理 -->
+<script>
+  //対象エレメント取得
+  const btnCreate = document.getElementById('btnCreate');
+  const inputNewTitle = document.getElementById('inputNewTitle');
+  const btnEdit = document.getElementById('btnEdit');
+  const inputEditTitle = document.getElementById('inputEditTitle');
+  const btnDelete = document.getElementById('btnDelete');
+  const selectedProjectNameLabel = document.querySelectorAll(".selected-project-name");
+  const radioBtn = document.querySelectorAll(".form-check-input");
+
+  //選択しているプロジェクトの情報
+  let projectId;
+  let projectName;
+  
+  //初期状態として一つラジオボタンを有効にする(プロジェクトが存在している時のみ)
+  //プロジェクトが一つもない状態では編集・削除ボタンは押せないようにする
+  //挙動要相談
+  if(radioBtn.length > 0){
+    radioBtn[0].checked = true;
+    projectId = radioBtn[0].value.split(',')[0];
+    projectName = radioBtn[0].value.split(',')[1];
+    selectedProjectNameLabel.forEach(label => {
+      label.innerHTML = "プロジェクト名　" + projectName;
+    });
+  }else{
+    btnEdit.disabled = true;
+    btnDelete.disabled = true;
+    selectedProjectNameLabel.forEach(label => {
+      label.innerHTML = "プロジェクト未登録";
+    });
+  }
+
+  //ラジオボタンクリック時の挙動
+  //project_idとproject_name更新
+  //モーダルのラベル更新
+  //挙動要相談
+  radioBtn.forEach(btn => {
+    btn.addEventListener('click', () => {
+      projectId = btn.value.split(',')[0];
+      projectName = btn.value.split(',')[1];
+      selectedProjectNameLabel.forEach(label => {
+      label.innerHTML = "プロジェクト名　" + projectName;
+    });
+    })
+  });
+
+//作成ボタンクリック時の挙動
+//プロジェクト名が未入力ならなにもしない
+//プロジェクト名が記載されてたらPOST処理をして、自分自身へリダイレクト
+btnCreate.addEventListener('click', () => {
+  if(inputNewTitle.value == ""){
+    return;
+  }
+  // 送信データ用意
+  // 例:
+  // {
+  //     "project_name": "projectのなまえ"
+  // }
+  json_data = {'project_name': inputNewTitle.value};
+  //POST通信
+  doPost(document.URL + '/create', json_data);
+  //自分自身へリダイレクト
+  location.href = document.URL;
+});
+
+  //編集ボタンクリック時の挙動
+  //プロジェクト名が未入力ならなにもしない
+  //プロジェクト名が記載されてたらPOST処理をして、自分自身へリダイレクト
+  btnEdit.addEventListener('click', () => {
+    if(inputEditTitle.value == ""){
+      return;
+    }
+    // 送信データ用意
+    // 例:
+    // {
+    //     "project_id": 12345,
+    //     "project_name": "ほげほげ"
+    // }
+    json_data = {
+      'project_id': projectId,
+      'project_name': inputEditTitle.value
+    };
+    //POST通信
+    doPost(document.URL + '/edit', json_data);
+    //自分自身へリダイレクト
+    location.href = document.URL;
+  });
+
+  //削除ボタンクリック時の挙動
+  //POST処理をして、自分自身へリダイレクト
+  btnEdit.addEventListener('click', () => {
+    if(inputEditTitle.value == ""){
+      return;
+    }
+    // 送信データ用意
+    // 例:
+    // {
+    //     "project_id": 12345
+    // }
+    json_data = {
+      'project_id': projectId
+    };
+    //POST通信
+    doPost(document.URL + '/delete', json_data);
+    //自分自身へリダイレクト
+    location.href = document.URL;
+  });
+
+  //データをPOST通信する
+  function doPost(url, date) {
+    var json_text = JSON.stringify(date);//Json文字列へ変換
+    var xhr = new XMLHttpRequest();//インスタンス作成
+    xhr.onload = () => {//レスポンスを受け取った時の処理、今は何もせず
+    };
+    xhr.onerror = () => {//エラーが起きた時の処理、今は何もせず
+    };
+    xhr.open("POST", url, false);//第三引数falseで同期（応答をまつ）。
+    xhr.setRequestHeader("Content-Type", "application/json");//データタイプJSONに設定
+    xhr.send(json_text);
+  }
+</script>
+
+{% endblock %}

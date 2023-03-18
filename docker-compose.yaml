@@ -12,7 +12,7 @@ services:
     container_name: Regain-app
     volumes:
       - ./app:/usr/src/app
-    command: flask run --host=0.0.0.0
+    # command: flask run --host=0.0.0.0
 
   db:
     build:

@@ -1,0 +1,123 @@
+{% extends "frame.html" %}
+{% block content %}
+
+<!-- CSS for Modal -->
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #f4f4f4;
+        margin: 20% auto;
+        width: 50%;
+        box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 7px 20px 0 rgba(0, 0, 0, 0.17);
+        animation-name: modalopen;
+        animation-duration: 1s;
+    }
+
+    @keyframes modalopen {
+        from {
+            opacity: 0
+        }
+
+        to {
+            opacity: 1
+        }
+    }
+
+    .modal-header h1 {
+        margin: 1rem 0;
+    }
+
+    .modal-header {
+        background: lightblue;
+        padding: 3px 15px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .modal-body {
+        padding: 10px 20px;
+        color: black;
+    }
+</style>
+<!-- End CSS -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-5">
+            <h1>工程一覧</h1>
+        </div>
+        <div class="col-7 d-flex align-items-end justify-content-end">
+            <button id="btnNewRecord" type="button" class="btn btn-info w-20 me-5 px-3"><i
+                    class="fa-solid fa-plus"></i>New</button>
+            <button id="btnEditRecord" type="button" class="btn btn-info w-20 me-5 px-3"><i
+                    class="fa-solid fa-pen-to-square"></i>Edit</button>
+            <button id="btnDelRecord" type="button" class="btn btn-info w-20 me-5 px-3"><i
+                    class="fa-solid fa-trash"></i>Trash</button>
+        </div>
+    </div>
+    {% block article %}
+    {% endblock %}
+</div>
+
+<!-- Javascript for Modal -->
+<script>
+    const btnNewRecord = document.getElementById('btnNewRecord');
+    const btnEditRecord = document.getElementById('btnEditRecord');
+    const btnDelRecord = document.getElementById('btnDelRecord');
+    const mdlNewRecord = document.getElementById('mdlNewRecord');
+    const mdlEditRecord = document.getElementById('mdlEditRecord');
+    const mdlDelRecord = document.getElementById('mdlDelRecord');
+
+    const modalClasses = document.querySelectorAll(".modal");
+    const btnCloses = document.querySelectorAll(".modalClose");
+
+    // チェックアイテムのID取得
+    function getCheckedItemValue(){
+        let radioButtons = document.getElementsByName('selectRecords');
+        let checkedValue = -1;
+        radioButtons.forEach(record => {
+            if(record.checked){
+                checkedValue = record.value;
+            }
+        })
+        return checkedValue;
+    }
+
+    // Newボタンがクリックされた時
+    btnNewRecord.addEventListener('click', () => {
+        mdlNewRecord.style.display = 'block';
+    });
+
+    // Editボタンがクリックされた時
+    btnEditRecord.addEventListener('click', () => {
+        mdlEditRecord.style.display = 'block';
+    });
+
+    // Deleteボタンがクリックされた時
+    btnDelRecord.addEventListener('click', () => {
+        mdlDelRecord.style.display = 'block';
+    });
+
+    // バツ印がクリックされた時
+    btnCloses.forEach((btnClose) => {
+        btnClose.addEventListener('click', () => {
+            modalClasses.forEach((modal) => {
+                modal.style.display = 'none';
+            })
+        })
+    })
+</script>
+<!-- End Javascript -->
+
+{% endblock %}
