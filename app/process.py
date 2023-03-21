@@ -69,8 +69,10 @@ def process_edit(project_id:int) -> int:
     Method: POST
     jsonファイル例:
     {
-        "process_id": 12345
-        "process_name": "ほげほげ"
+        "process_id": 12345,
+        "process_name": "ほげほげ",
+        "status_id": 2,
+        "deadline": "2023-02-23"
     }
 
     Return:
@@ -95,12 +97,18 @@ def process_edit(project_id:int) -> int:
         params = request.get_json()
 
         process_name, process_id = params["process_name"], params["process_id"]
+        status_id = params["status_id"]
+        deadline = params.get("deadline","0000-00-00")
+        if deadline == "" :
+            deadline = "0000-00-00"
         print(f"project_name: {process_name}, project_id: {process_id}")
 
         # プロジェクト一覧更新SQL
         process_update_sql = sql_temp.PROCESS_UPDATE_SQL.format(
             process_name = process_name,
-            process_id = process_id
+            process_id = process_id,
+            status_id = status_id,
+            deadline = deadline
         )
 
         rows = regain_db_driver.sql_run(process_update_sql)
@@ -113,7 +121,7 @@ def process_edit(project_id:int) -> int:
         return f"Process with process_id: {process_id} edited.", result_num
     
     except Exception as e:
-        print("Error editing process: {e}") # 本当はここでLoggerを使いたい
+        print(f"Error editing process: {e}") # 本当はここでLoggerを使いたい
         
         # 500 (NG)
         result_num = 500

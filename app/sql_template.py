@@ -18,7 +18,9 @@ class SQLTemplates():
     UPDATE
         processes
     SET
-        process_name = '{process_name}'
+        process_name = '{process_name}',
+        status_id = {status_id},
+        deadline = CAST('{deadline}' as DATE)
     WHERE
         process_id = {process_id}
     """
@@ -28,8 +30,10 @@ class SQLTemplates():
         tasks
     SET
         task_name = '{task_name}',
+        status_id = {status_id},
         priority_id = {priority_id},
-        deadline = '{deadline}'
+        estimated_time = CAST('{estimated_time}' as TIME),
+        deadline = CAST('{deadline}' as DATE)
     WHERE
         task_id = {task_id}  
     """
@@ -63,12 +67,8 @@ class SQLTemplates():
     TASK_INSERT_SQL= """
     INSERT INTO
         tasks (task_name, process_id, priority_id, estimated_time, deadline)
-    SELECT
-        '{task_name}', {process_id}, priority_id, CAST('{estimated_time}' as TIME), CAST('{deadline}' as DATE)
-    FROM
-        priorities
-    WHERE
-        priority_name = '{priority_name}'
+    VALUES
+        ('{task_name}', {process_id}, {priority_id}, CAST('{estimated_time}' as TIME), CAST('{deadline}' as DATE))
     """
 
     ##################
@@ -179,7 +179,7 @@ class SQLTemplates():
 
     PROCESS_STATUS_NAME_SELECT_SQL = """
     SELECT
-        status_name
+        status_id, status_name
     FROM
         process_statuses
     """
@@ -218,14 +218,14 @@ class SQLTemplates():
 
     TASK_STATUS_NAME_SELECT_SQL = """
     SELECT
-        status_name
+        status_id, status_name
     FROM
         task_statuses
     """
 
     TASK_PRIORITY_SELECT_SQL = """
     SELECT
-        priority_name
+        priority_id, priority_name
     FROM
         priorities
     """
