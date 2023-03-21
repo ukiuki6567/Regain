@@ -13,7 +13,7 @@ bp.register_blueprint(task.bp)
 
 #新規プロセス作成
 @bp.route('/create', methods=['POST'])
-def process_create(project_id):
+def process_create(project_id:int) -> int:
     """
     新規にプロセスを作成する関数。
     ステータスは初期値となる。
@@ -23,6 +23,12 @@ def process_create(project_id):
         "process_name": "processのなまえ",
         "deadline":"2023-02-05"
     }
+
+    Args:
+        project_id (int): 各プロジェクトに割り振られたID
+
+    Returns:
+        int: 200 (OK) or 500 (NG)
     """
     params = request.get_json()
     process_name = params["process_name"]
@@ -41,16 +47,22 @@ def process_create(project_id):
         rows = regain_db_driver.sql_run(process_insert_sql)
         rows = regain_db_driver.sql_run("COMMIT")
         regain_db_driver.db_close()
-        return f"Process with process_name: {process_name} created.", 200
+        
+        # 200 (OK)
+        result_num = 200
+        return f"Process with process_name: {process_name} created.", result_num
     
     except Exception as e:
         print("Error creating process: {e}") # 本当はここでLoggerを使いたい
-        return f"Error creating process with process_name: {process_name}.\nError: {str(e)}", 500
+        
+        # 500 (NG)
+        result_num = 500
+        return f"Error creating process with process_name: {process_name}.\nError: {str(e)}", result_num
 
 
 #既存プロセス編集
 @bp.route('/edit', methods=['POST'])
-def process_edit(project_id):
+def process_edit(project_id:int) -> int:
     """
     既存のプロジェクト情報を変更する関数。
     プロジェクト名の情報変更があった場合、その内容をDBに更新する。
@@ -63,6 +75,12 @@ def process_edit(project_id):
 
     Return:
         200(OK) or 500(NG)
+
+    Args:
+        project_id (int): 各プロジェクトに割り振られたID
+
+    Returns:
+        int: 200(OK) or 500(NG)
     """
 
     # 処理開始
@@ -89,16 +107,22 @@ def process_edit(project_id):
         rows = regain_db_driver.sql_run("COMMIT")
         
         regain_db_driver.db_close()
-        return f"Process with process_id: {process_id} edited.", 200
+
+        # 200 (OK)
+        result_num = 200
+        return f"Process with process_id: {process_id} edited.", result_num
     
     except Exception as e:
         print("Error editing process: {e}") # 本当はここでLoggerを使いたい
-        return f"Error editing process with process_id: {process_id}.\nError: {str(e)}", 500
+        
+        # 500 (NG)
+        result_num = 500
+        return f"Error editing process with process_id: {process_id}.\nError: {str(e)}", result_num
 
 
 #既存プロセス削除
 @bp.route('/delete', methods=['DELETE'])
-def process_delete(project_id):
+def process_delete(project_id:int) -> int:
     """
     既存プロセス削除処理。
     受け取ったprocess_idに対応するプロジェクトを削除する。
@@ -108,8 +132,11 @@ def process_delete(project_id):
         "process_id": 12345
     }
 
+    Args:
+        project_id (int): 各プロジェクトに割り振られたID
+
     Returns:
-        200(OK) or 500(NG)
+        int: 200(OK) or 500(NG)
     """
     # 処理開始
     print(f"処理開始: /{project_id}/delete")
@@ -133,24 +160,40 @@ def process_delete(project_id):
         rows = regain_db_driver.sql_run("COMMIT")
 
         regain_db_driver.db_close()
-        return f"Process with process_id: {process_id} deleted.", 200
+
+        # 200 (OK)
+        result_num = 200
+        return f"Process with process_id: {process_id} deleted.", result_num
 
     except Exception as e:
         print("Error deleting process: {e}") # 本当はここでLoggerを使いたい
-        return f"Error deleting process with process_id: {process_id}.\nError: {str(e)}", 500
+
+        # 500 (NG)
+        result_num = 500
+        return f"Error deleting process with process_id: {process_id}.\nError: {str(e)}", result_num
 
 #既存プロセス選択、タスク一覧表示
 @bp.route('/<int:process_id>')
-def task_get(project_id, process_id):
+def task_get(project_id:int, process_id:int) -> str:
     """
     タスク一覧を表示。
     Method: GET
+
+    Args:
+        project_id (int): 各プロジェクトに割り振られたID
+        process_id (int): 各プロセスに割り振られたID
+
+    Returns:
+        str: htmlテンプレート (tasks.html)
     """
     
     #dbDriverの生成
     regain_db_driver = dbDriver()
 
     try:
+        #プロセス名取得
+        process_name = regain_db_driver.sql_run(sql_temp.PROCESS_NAME_SELECT_SQL.format(process_id = process_id))[0]["process_name"]
+
         #タスク一覧取得SQL
         task_select_sql = sql_temp.TASK_SELECT_SQL.format(
             process_id = process_id
@@ -165,7 +208,14 @@ def task_get(project_id, process_id):
         
         #dbDriverのクローズと値返却
         regain_db_driver.db_close()
-        return render_template('tasks.html', title='tasks', tasks=tasks, status_names = status_names, priorities = priorities)
+        return render_template('tasks.html', 
+                            title='tasks', 
+                            tasks=tasks, 
+                            status_names = status_names, 
+                            priorities = priorities,  
+                            project_id = project_id, 
+                            process_id = process_id,
+                            process_name = process_name)
     
     except Exception as e:
         print("Error getting task: {e}") # 本当はここでLoggerを使いたい

@@ -8,7 +8,7 @@ services:
     networks:
       - Regain-network
     ports:
-      - "80:80"
+      - "5080:80"
     container_name: Regain-app
     volumes:
       - ./app:/usr/src/app
