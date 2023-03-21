@@ -1,11 +1,20 @@
 {% extends "menu.html" %}
+
+{% block title %}
+工程一覧
+{% endblock %}
+
+{% block navigation %}
+<a href="/"><i class="fa-regular fa-square-caret-left fa-2xl"></i></a>
+{% endblock %}
+
 {% block article %}
 
 <body>
     <div class="container">
-        <div class="row">
-            <h2>{{ project_name }} 工程一覧</h2>
-        </div>
+        <div class="row pt-3">
+            <h5 class="text-center">{{ project_name }}</h5>
+          </div>
         <div class="row justify-content-center">
             <div class="col-8 text-center">
                 <table class="table">

@@ -199,6 +199,9 @@ def task_get(project_id:int, process_id:int) -> str:
     regain_db_driver = dbDriver()
 
     try:
+        #プロジェクト名取得
+        project_name = regain_db_driver.sql_run(sql_temp.PROJECT_NAME_SELECT_SQL.format(project_id = project_id))[0]["project_name"]
+
         #プロセス名取得
         process_name = regain_db_driver.sql_run(sql_temp.PROCESS_NAME_SELECT_SQL.format(process_id = process_id))[0]["process_name"]
 
@@ -221,7 +224,8 @@ def task_get(project_id:int, process_id:int) -> str:
                             tasks=tasks, 
                             status_names = status_names, 
                             priorities = priorities,  
-                            project_id = project_id, 
+                            project_id = project_id,
+                            project_name = project_name, 
                             process_id = process_id,
                             process_name = process_name)
     
