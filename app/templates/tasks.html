@@ -1,6 +1,7 @@
 {% extends "menu.html" %}
+
 {% block title %}
-{{ project_name }} > {{ process_name }}
+タスク一覧
 {% endblock %}
 
 {% block navigation %}
@@ -11,9 +12,9 @@
 {% block article %}
 
 <div class="container">
-    <div class="row">
-        <h2>タスク一覧</h2>
-    </div>
+    <div class="row pt-3">
+        <h5 class="text-center">{{ project_name }} > {{ process_name }}</h5>
+      </div>
     <div class="row justify-content-center">
         <div class="col-8 text-center">
             <table class="table">
