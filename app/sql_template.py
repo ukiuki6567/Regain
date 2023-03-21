@@ -207,6 +207,15 @@ class SQLTemplates():
         task_id
     """
 
+    PROJECT_NAME_SELECT_SQL="""
+    SELECT
+        project_name
+    FROM
+        projects
+    WHERE
+        project_id = {project_id}
+    """
+
     PROCESS_NAME_SELECT_SQL="""
     SELECT
         process_name
