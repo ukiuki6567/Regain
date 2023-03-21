@@ -165,7 +165,7 @@ def task_get(project_id, process_id):
         
         #dbDriverのクローズと値返却
         regain_db_driver.db_close()
-        return render_template('tasks.html', title='tasks', tasks=tasks, status_names = status_names, priorities = priorities)
+        return render_template('tasks.html', title='tasks', tasks=tasks, priorities = priorities,  project_id = project_id, process_id = process_id)
     
     except Exception as e:
         print("Error getting task: {e}") # 本当はここでLoggerを使いたい
