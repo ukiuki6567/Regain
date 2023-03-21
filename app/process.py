@@ -151,6 +151,9 @@ def task_get(project_id, process_id):
     regain_db_driver = dbDriver()
 
     try:
+        #プロセス名取得
+        process_name = regain_db_driver.sql_run(sql_temp.PROCESS_NAME_SELECT_SQL.format(process_id = process_id))[0]["process_name"]
+
         #タスク一覧取得SQL
         task_select_sql = sql_temp.TASK_SELECT_SQL.format(
             process_id = process_id
@@ -165,7 +168,14 @@ def task_get(project_id, process_id):
         
         #dbDriverのクローズと値返却
         regain_db_driver.db_close()
-        return render_template('tasks.html', title='tasks', tasks=tasks, status_names = status_names, priorities = priorities,  project_id = project_id, process_id = process_id)
+        return render_template('tasks.html', 
+                            title='tasks', 
+                            tasks=tasks, 
+                            status_names = status_names, 
+                            priorities = priorities,  
+                            project_id = project_id, 
+                            process_id = process_id,
+                            process_name = process_name)
     
     except Exception as e:
         print("Error getting task: {e}") # 本当はここでLoggerを使いたい

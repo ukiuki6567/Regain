@@ -207,6 +207,15 @@ class SQLTemplates():
         task_id
     """
 
+    PROCESS_NAME_SELECT_SQL="""
+    SELECT
+        process_name
+    FROM
+        processes
+    WHERE
+        process_id = {process_id}
+    """
+
     TASK_STATUS_NAME_SELECT_SQL = """
     SELECT
         status_name

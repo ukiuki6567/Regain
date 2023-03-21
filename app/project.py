@@ -146,7 +146,7 @@ def process_get(project_id):
 
     try:
         #プロジェクト名取得
-        project_name = regain_db_driver.sql_run(sql_temp.PROJECT_NAME_SELECT_SQL.format(project_id = project_id))
+        project_name = regain_db_driver.sql_run(sql_temp.PROJECT_NAME_SELECT_SQL.format(project_id = project_id))[0]["project_name"]
 
         #本日の日付取得
         now = datetime.datetime.now()
