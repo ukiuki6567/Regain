@@ -19,7 +19,7 @@ def task_create(project_id:int, process_id:int) -> int:
     jsonファイル例:
     {
         "task_name":"taskのなまえ",
-        "priority_name":"低",
+        "priority_id":1,
         "estimated_time":"24:00",
         "deadline":"2023-02-05"
     }
@@ -32,11 +32,16 @@ def task_create(project_id:int, process_id:int) -> int:
         int: 200(OK) or 500(NG)
     """
     params = request.get_json()
+    print(params)
     task_name = params["task_name"]
-    priority_name = params.get("priority_name")
+    priority_id = params.get("priority_id")
     estimated_time = params.get("estimated_time","0:00")
+    if estimated_time == "" :
+        estimated_time = "0:00"
     estimated_time += ":00"
     deadline = params.get("deadline","0000-00-00")
+    if deadline == "" :
+        deadline = "0000-00-00"
 
     #dbDriverの生成
     regain_db_driver = dbDriver()
@@ -48,7 +53,7 @@ def task_create(project_id:int, process_id:int) -> int:
             process_id = process_id,
             estimated_time = estimated_time,
             deadline = deadline,
-            priority_name = priority_name
+            priority_id = priority_id
         )
         rows = regain_db_driver.sql_run(task_insert_sql)
         rows = regain_db_driver.sql_run("COMMIT")
@@ -59,7 +64,7 @@ def task_create(project_id:int, process_id:int) -> int:
         return f"Task with task_name: {task_name} created.", result_num
 
     except Exception as e:
-        print("Error creating task: {e}") # 本当はここでLoggerを使いたい
+        print(f"Error creating task: {e}") # 本当はここでLoggerを使いたい
         
         # 500 (NG)
         result_num = 500
@@ -76,7 +81,9 @@ def task_edit(project_id:int, process_id:int) -> int:
     {
         "task_id": 12345,
         "task_name": "ほげほげ",
+        "status_id": 2,
         "priority_id": 3,
+        "estimated_time":"24:00",
         "deadline": "2023-02-23"
     }
 
@@ -101,15 +108,24 @@ def task_edit(project_id:int, process_id:int) -> int:
 
         task_name, task_id = params["task_name"], params["task_id"]
         priority_id = params["priority_id"]
+        status_id = params["status_id"]
+        estimated_time = params.get("estimated_time","0:00")
+        if estimated_time == "" :
+            estimated_time = "0:00"
+        estimated_time += ":00"
         deadline = params.get("deadline","0000-00-00")
+        if deadline == "" :
+            deadline = "0000-00-00"
 
-        print(f"task_name: {task_name}, task_id: {task_id}, proiroty_id: {priority_id}, deadline: {deadline}")
+        print(f"task_name: {task_name}, task_id: {task_id}, proiroty_id: {priority_id}, estimated_time: {estimated_time}, deadline: {deadline}")
 
-        # プロジェクト一覧更新SQL
+        # タスク更新SQL
         task_update_sql = sql_temp.TASK_UPDATE_SQL.format(
             task_name = task_name,
             task_id = task_id,
+            status_id = status_id,
             priority_id = priority_id,
+            estimated_time = estimated_time,
             deadline = deadline
         )
 
@@ -122,7 +138,7 @@ def task_edit(project_id:int, process_id:int) -> int:
         return f"Task with task_id: {task_id} edited.", result_num
 
     except Exception as e:
-        print("Error editing task: {e}") # 本当はここでLoggerを使いたい
+        print(f"Error editing task: {e}") # 本当はここでLoggerを使いたい
 
         # 500 (NG)
         result_num = 500

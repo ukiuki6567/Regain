@@ -37,7 +37,7 @@
                         <td>{{ task.passed_time }}</td>
                         <td>{{ task.deadline }}</td>
                         <td><button type="button"
-                                onclick="location.href='{{project_id}}/{{process_id}}/{{ task.task_id }}'"
+                                onclick="location.href='{{process_id}}/{{ task.task_id }}'"
                                 class="btn btn-info w-20 me-5 px-3 text">START</button></td>
                     </tr>
                     {% endfor %}
@@ -60,6 +60,26 @@
                         <label for="InputTask" class="form-label">タスク名</label>
                         <input type="text" class="form-control" id="inputNewTitle" aria-describedby="taskHelp">
                         <div id="taskHelp" class="form-text">入力必須</div>
+                        <br>
+                        <div>
+                            <label for="InputTask" class="form-label">優先度</label>
+                            <br>
+                            <select name="pref" size = "1" id="inputNewPriority">
+                                {% for priority in priorities %}
+                                <option value="{{priority.priority_id}}">{{ priority.priority_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                        <label for="InputTask" class="form-label">締め切り</label>
+                        <br>
+                        <input type="date" name="date" id="inputNewDeadline" />
+                        <br>
+                        <br>
+                        <label for="InputTask" class="form-label">予測時間</label>
+                        <br>
+                        <input type="text" class="form-control" id="inputNewEstimate" aria-describedby="taskHelp" placeholder="hh:mm">
+                        <br>
                     </div>
                     <div class="row">
                         <div class="col">
@@ -88,6 +108,35 @@
                         <label for="InputTask" class="form-label selected-task-name">タスク名</label>
                         <input type="text" class="form-control" id="inputEditTitle" aria-describedby="taskHelp">
                         <div id="taskHelp" class="form-text">入力必須</div>
+                        <br>
+                        <div>
+                            <label for="InputTask" class="form-label">ステータス</label>
+                            <br>
+                            <select name="pref" size = "1" id="inputEditStatus">
+                                {% for status in status_names %}
+                                <option value="{{status.status_id}}">{{ status.status_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="InputTask" class="form-label">優先度</label>
+                            <br>
+                            <select name="pref" size = "1" id="inputEditPriority">
+                                {% for priority in priorities %}
+                                <option value="{{priority.priority_id}}">{{ priority.priority_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                        <label for="InputTask" class="form-label">締め切り</label>
+                        <br>
+                        <input type="date" name="date" id="inputEditDeadline" />
+                        <br>
+                        <br>
+                        <label for="InputTask" class="form-label">予測時間</label>
+                        <br>
+                        <input type="text" class="form-control" id="inputEditEstimate" aria-describedby="taskHelp" placeholder="hh:mm">
+                        <br>
                     </div>
                     <div class="row">
                         <div class="col">
@@ -136,8 +185,15 @@
     //対象エレメント取得
     const btnCreate = document.getElementById('btnCreate');
     const inputNewTitle = document.getElementById('inputNewTitle');
+    const inputNewPriority = document.getElementById('inputNewPriority');
+    const inputNewDeadline = document.getElementById('inputNewDeadline');
+    const inputNewEstimate = document.getElementById('inputNewEstimate');
     const btnEdit = document.getElementById('btnEdit');
     const inputEditTitle = document.getElementById('inputEditTitle');
+    const inputEditStatus = document.getElementById('inputEditStatus');
+    const inputEditPriority = document.getElementById('inputEditPriority');
+    const inputEditDeadline = document.getElementById('inputEditDeadline');
+    const inputEditEstimate = document.getElementById('inputEditEstimate');
     const btnDelete = document.getElementById('btnDelete');
     const selectedTaskNameLabel = document.querySelectorAll(".selected-task-name");
     const radioBtn = document.querySelectorAll(".form-check-input");
@@ -151,7 +207,7 @@
     //挙動要相談
     if (radioBtn.length > 0) {
         radioBtn[0].checked = true;
-        taskId = radioBtn[0].value.split(',')[0];
+        taskId = Number(radioBtn[0].value.split(',')[0]);
         taskName = radioBtn[0].value.split(',')[1];
         selectedTaskNameLabel.forEach(label => {
             label.innerHTML = "タスク名　" + taskName;
@@ -170,7 +226,7 @@
     //挙動要相談
     radioBtn.forEach(btn => {
         btn.addEventListener('click', () => {
-            taskId = btn.value.split(',')[0];
+            taskId = Number(btn.value.split(',')[0]);
             taskName = btn.value.split(',')[1];
             selectedTaskNameLabel.forEach(label => {
                 label.innerHTML = "タスク名　" + taskName;
@@ -188,12 +244,20 @@
         // 送信データ用意
         // 例:
         // {
-        //     "task_name": "taskのなまえ"
+        //     "task_name":"taskのなまえ",
+        //     "priority_id":1,
+        //     "estimated_time":"24:00",
+        //     "deadline":"2023-02-05"
         // }
-        json_data = { 'task_name': inputNewTitle.value };
+        json_data = { 
+            'task_name': inputNewTitle.value,
+            'priority_id': Number(inputNewPriority.value),
+            'estimated_time': inputNewEstimate.value,
+            'deadline': inputNewDeadline.value
+        };
         //POST通信
-        url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
-        doPost(url + 'create', json_data);
+        url = document.URL.match(/.*?\/\/.*?\/.*?\/[0-9]*/)[0];//スラッシュ4個目と後ろの数字まで切り取り
+        doPost(url + '/create', json_data);
         //自分自身へリダイレクト
         location.href = url;
     });
@@ -209,15 +273,23 @@
         // 例:
         // {
         //     "task_id": 12345,
-        //     "task_name": "ほげほげ"
+        //     "task_name":"taskのなまえ",
+        //     "status_id":2,
+        //     "priority_id":1,
+        //     "estimated_time":"24:00",
+        //     "deadline":"2023-02-05"
         // }
         json_data = {
             'task_id': taskId,
-            'task_name': inputEditTitle.value
+            'task_name': inputEditTitle.value,
+            'status_id': Number(inputEditStatus.value),
+            'priority_id': Number(inputEditPriority.value),
+            'estimated_time': inputEditEstimate.value,
+            'deadline': inputEditDeadline.value
         };
         //POST通信
-        url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
-        doPost(url + 'edit', json_data);
+        url = document.URL.match(/.*?\/\/.*?\/.*?\/[0-9]*/)[0];//スラッシュ4個目と後ろの数字まで切り取り
+        doPost(url + '/edit', json_data);
         //自分自身へリダイレクト
         location.href = url;
     });
@@ -234,7 +306,7 @@
             'task_id': taskId
         };
         //POST通信
-        url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
+        url = document.URL.match(/.*?\/\/.*?\/.*?\/[0-9]*/)[0];//スラッシュ4個目と後ろの数字まで切り取り
         doDelete(url + '/delete', json_data);
         //自分自身へリダイレクト
         location.href = url;
