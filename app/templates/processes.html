@@ -41,7 +41,6 @@
                             <td style="cursor:pointer;" onclick="location.href= '/{{project_id}}/{{ process.process_id }}'">{{ process.estimated_time }}</td>
                             <td style="cursor:pointer;" onclick="location.href= '/{{project_id}}/{{ process.process_id }}'">{{ process.passed_time }}</td>
                             <td style="cursor:pointer;" onclick="location.href= '/{{project_id}}/{{ process.process_id }}'">{{ process.deadline }}</td>
-                            <td style="cursor:pointer;" onclick="location.href= '/{{project_id}}/{{ process.process_id }}'">{{ process.passed_time }}</td>
                             <td style="cursor:pointer;" onclick="location.href= '/{{project_id}}/{{ process.process_id }}'">{{ process.worktime_today }}</td>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
@@ -66,19 +65,20 @@
                     <form>
                         <div>
                             <label for="InputProcess" class="form-label">工程名</label>
-                            <input type="process" class="form-control" id="InputProcess" aria-describedby="processHelp">
+                            <input type="process" class="form-control" id="inputNewTitle" aria-describedby="processHelp">
                             <div id="processHelp" class="form-text">入力必須</div>
                         </div>
                         <div>
                             <label for="InputDeadline" class="form-label">締切</label>
-                            <input type="deadline" class="form-control" id="InputDeadline">
+                            <input type="date" class="form-control" id="InputNewDeadline">
                         </div>
                         <div class="row">
                             <div class="col">
                                 <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
                             </div>
                             <div class="col">
-                                <button type="create" class="btn btn-info modalClose">作成</button>
+                                <!-- <button type="create" class="btn btn-info modalClose" id ="btnCreate">作成</button> -->
+                                <button type="button" class="btn btn-info modalClose" id ="btnCreate">作成</button>
                             </div>
                         </div>
                     </form>
@@ -89,59 +89,72 @@
 
     <div id="mdlEditRecord" class="modal">
         <div class="container">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>工程編集</h2>
-                    <span class="modalClose">✕</span>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div>
-                            <label for="InputProcess" class="form-label">工程名</label>
-                            <input type="process" class="form-control" id="InputProcess" aria-describedby="processHelp">
-                            <div id="processHelp" class="form-text">入力必須</div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
-                            </div>
-                            <div class="col">
-                                <button type="create" class="btn btn-info modalClose">作成</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>工程編集</h2>
+              <span class="modalClose">✕</span>
             </div>
+            <div class="modal-body">
+              <form>
+                <div>
+                  <label for="InputProcess" class="form-label selected-process-name">工程名</label>
+                  <input type="text" class="form-control" id="inputEditTitle" aria-describedby="processHelp">
+                  <div id="processHelp" class="form-text">入力必須</div>
+                  <div>
+                    <label for="InputProcess" class="form-label">ステータス</label>
+                    <br>
+                    <select name="pref" size = "1" id="inputEditStatus">
+                        {% for status in status_names %}
+                        <option value="{{status.status_id}}">{{ status.status_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <br>
+                <label for="InputProcess" class="form-label">締め切り</label>
+                <br>
+                <input type="date" name="date" id="inputEditDeadline" />
+                <br>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <button type="button" class="btn btn-info modalClose">キャンセル</button>
+                  </div>
+                  <div class="col">
+                    <button id="btnEdit" type="button" class="btn btn-info modalClose">更新</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-    </div>
-
-    <div id="mdlDelRecord" class="modal">
+      </div>
+      
+      <div id="mdlDelRecord" class="modal">
         <div class="container">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>工程削除</h2>
-                    <span class="modalClose">✕</span>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div>
-                            <label for="InputProcess" class="form-label">工程名</label>
-                            <input type="process" class="form-control" id="InputProcess" aria-describedby="processHelp">
-                            <div id="processHelp" class="form-text">入力必須</div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
-                            </div>
-                            <div class="col">
-                                <button type="create" class="btn btn-info modalClose">作成</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>工程削除</h2>
+              <span class="modalClose">✕</span>
             </div>
+            <div class="modal-body">
+              <form>
+                <div>
+                  <label for="InputProcess" class="form-label selected-process-name">工程名</label>
+                  <div id="processHelp" class="form-text">入力必須</div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <button type="button" class="btn btn-info modalClose">キャンセル</button>
+                  </div>
+                  <div class="col">
+                    <button id="btnDelete" type="button" class="btn btn-info modalClose">削除</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
     <!-- ここまでモーダル -->
 </body>
 <!-- script for Date and Day of the week -->
@@ -253,5 +266,144 @@
         }
     }
 </script>
+<!-- モーダルの処理 -->
+<script>
+    //対象エレメント取得
+    const btnCreate = document.getElementById('btnCreate');
+    const inputNewTitle = document.getElementById('inputNewTitle');
+    const btnEdit = document.getElementById('btnEdit');
+    const inputEditTitle = document.getElementById('inputEditTitle');
+    const btnDelete = document.getElementById('btnDelete');
+    const selectedProcessNameLabel = document.querySelectorAll(".selected-process-name");
+    const radioBtn = document.querySelectorAll(".form-check-input");
+    const inputNewDeadline = document.getElementById('InputNewDeadline');
+    const inputEditDeadline = document.getElementById('InputEditDeadline');
+    const inputEditStatus = document.getElementById('InputEditStatus');
+    //選択している工程の情報
+    let processId;
+    let processName;
+    
+    //初期状態として一つラジオボタンを有効にする(工程が存在している時のみ)
+    //工程が一つもない状態では編集・削除ボタンは押せないようにする
+    //挙動要相談
+    if(radioBtn.length > 0){
+      radioBtn[0].checked = true;
+      processId = radioBtn[0].value.split(',')[0];
+      processName = radioBtn[0].value.split(',')[1];
+      selectedProcessNameLabel.forEach(label => {
+        label.innerHTML = "工程名　" + processName;
+      });
+    }else{
+      btnEdit.disabled = true;
+      btnDelete.disabled = true;
+      selectedProcessNameLabel.forEach(label => {
+        label.innerHTML = "工程未登録";
+      });
+    }
+  
+    //ラジオボタンクリック時の挙動
+    //process_idとprocess_name更新
+    //モーダルのラベル更新
+    //挙動要相談
+    radioBtn.forEach(btn => {
+      btn.addEventListener('click', () => {
+        processId = btn.value.split(',')[0];
+        processName = btn.value.split(',')[1];
+        selectedProcessNameLabel.forEach(label => {
+        label.innerHTML = "工程名　" + processName;
+      });
+      })
+    });
+  
+    //作成ボタンクリック時の挙動
+    //プロジェクト名が未入力ならなにもしない
+    //プロジェクト名が記載されてたらPOST処理をして、自分自身へリダイレクト
+    btnCreate.addEventListener('click', () => {
+      if(inputNewTitle.value == ""){
+        return;
+      }
+      // 送信データ用意
+      // 例:
+      // {
+      //     "process_name": "processのなまえ"
+      // }
+      json_data = {'process_name': inputNewTitle.value,'deadline': inputNewDeadline.value};
+      //POST通信
+      url = document.URL.match(/.*?\/\/.*?\/[0-9]*/)[0];//スラッシュ3個目まで切り取り
+    doPost(url + '/create', json_data);
+      //自分自身へリダイレクト
+     location.href = url;
+    });
+  
+    //編集ボタンクリック時の挙動
+    //プロジェクト名が未入力ならなにもしない
+    //プロジェクト名が記載されてたらPOST処理をして、自分自身へリダイレクト
+    btnEdit.addEventListener('click', () => {
+      if(inputEditTitle.value == ""){
+        return;
+      }
+      // 送信データ用意
+      // 例:
+      // {
+      //     "project_id": 12345,
+      //     "project_name": "ほげほげ"
+      // }
+      json_data = {
+        'process_id': processId,
+        'process_name': inputEditTitle.value,
+        'process_status': inputEditStatus.value,
+        'process_deadline': inputEditDeadline.value
+      };
+      //POST通信
+      url = document.URL.match(/.*?\/\/.*?\/[0-9]*/)[0];//スラッシュ3個目まで切り取り
+      doPost(url + 'edit', json_data);
+      //自分自身へリダイレクト
+      location.href = url;
+    });
+  
+    //削除ボタンクリック時の挙動
+    //POST処理をして、自分自身へリダイレクト
+    btnDelete.addEventListener('click', () => {
+      // 送信データ用意
+      // 例:
+      // {
+      //     "project_id": 12345
+      // }
+      json_data = {
+        'process_id': processId
+      };
+      //POST通信
+      url = document.URL.match(/.*?\/\/.*?\/[0-9]*/)[0];//スラッシュ3個目まで切り取り
+      doDelete(url + '/delete', json_data);
+      //自分自身へリダイレクト
+      location.href = url;
+    });
+  
+    //データをPOST通信する
+    function doPost(url, date) {
+      var json_text = JSON.stringify(date);//Json文字列へ変換
+      var xhr = new XMLHttpRequest();//インスタンス作成
+      xhr.onload = () => {//レスポンスを受け取った時の処理、今は何もせず
+      };
+      xhr.onerror = () => {//エラーが起きた時の処理、今は何もせず
+      };
+      xhr.open("POST", url, false);//第三引数falseで同期（応答をまつ）。
+      xhr.setRequestHeader("Content-Type", "application/json");//データタイプJSONに設定
+      xhr.send(json_text);
+    }
+  
+  //データをDELETE通信する
+  function doDelete(url, date) {
+    var json_text = JSON.stringify(date);//Json文字列へ変換
+    var xhr = new XMLHttpRequest();//インスタンス作成
+    xhr.onload = () => {//レスポンスを受け取った時の処理、今は何もせず
+    };
+    xhr.onerror = () => {//エラーが起きた時の処理、今は何もせず
+    };
+    xhr.open("DELETE", url, false);//第三引数falseで同期（応答をまつ）。
+    xhr.setRequestHeader("Content-Type", "application/json");//データタイプJSONに設定
+    xhr.send(json_text);
+  }
+  </script>
 </body>
 {% endblock %}
