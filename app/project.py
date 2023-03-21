@@ -5,6 +5,7 @@ from db_driver import dbDriver
 import process
 import datetime
 import math
+import logging
 
 from sql_template import SQLTemplates as sql_temp
 
@@ -190,23 +191,23 @@ def process_get(project_id:int) -> str:
 
         #予測日数を計算
         for one_process in processes:
-            #過去の作業記録がないプロセスのpredict_timeは-1
-            if(one_process["passed_date"] == 0 or (one_process["today_commit_time"] > 0 and one_process["passed_date"] == 1)) :
-                one_process["predict_time"] = -1
-                continue
-                
-            #本日の作業分は除外して作業時間/日を計算する
-            #予測時間への必要日数を計算したのち、作業日数を引いて残り予測日数を出す
-            if(one_process["today_commit_time"] > 0):
-                passed_time_par_day = (one_process["passed_time_sec"] - one_process["today_commit_time"]) / (one_process["passed_date"] - 1)
-                required_day = one_process["estimated_time_sec"] / passed_time_par_day
-                predict_time = required_day - (one_process["passed_date"] - 1)
-            else:
-                passed_time_par_day = one_process["passed_time_sec"]/ one_process["passed_date"]
-                required_day = one_process["estimated_time_sec"] / passed_time_par_day
-                predict_time = required_day - one_process["passed_date"]
-            one_process["predict_time"] = math.ceil(predict_time)
             one_process["worktime_today"] = one_process["today_commit_time"]
+        #     #過去の作業記録がないプロセスのpredict_timeは-1
+        #     if(one_process["passed_date"] == 0 or (one_process["today_commit_time"] > 0 and one_process["passed_date"] == 1)) :
+        #         one_process["predict_time"] = -1
+        #         continue
+                
+        #     #本日の作業分は除外して作業時間/日を計算する
+        #     #予測時間への必要日数を計算したのち、作業日数を引いて残り予測日数を出す
+        #     if(one_process["today_commit_time"] > 0):
+        #         passed_time_par_day = (one_process["passed_time_sec"] - one_process["today_commit_time"]) / (one_process["passed_date"] - 1)
+        #         required_day = one_process["estimated_time_sec"] / passed_time_par_day
+        #         predict_time = required_day - (one_process["passed_date"] - 1)
+        #     else:
+        #         passed_time_par_day = one_process["passed_time_sec"]/ one_process["passed_date"]
+        #         required_day = one_process["estimated_time_sec"] / passed_time_par_day
+        #         predict_time = required_day - one_process["passed_date"]
+        #     one_process["predict_time"] = math.ceil(predict_time)
             
         #プロセスステータス一覧取得SQL
         status_names = regain_db_driver.sql_run(sql_temp.PROCESS_STATUS_NAME_SELECT_SQL)
@@ -219,4 +220,7 @@ def process_get(project_id:int) -> str:
 
         # 500 (NG)
         result_num = 500
-        return f"Error getting process with project_id: {project_id}.\nError: {str(e)}", result_num
+        logging.error(str(e))
+        return "Error getting process with project_id: {project_id}.\nError: {error}".format(
+            project_id=project_id, error=str(e)
+        ), result_num

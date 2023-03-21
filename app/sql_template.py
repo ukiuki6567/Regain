@@ -92,7 +92,7 @@ class SQLTemplates():
     PROCESS_COMMIT_TIME_SUM_SELECT_SQL="""
     SELECT
         processes.process_id,
-        IFNULL(SUM(TIME_TO_SEC(commit_time)), 0) as today_commit_time
+        DATE_FORMAT(SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(commit_time)), 0)), '%k:%i')  as today_commit_time
     FROM
         processes
         LEFT JOIN tasks
@@ -135,16 +135,16 @@ class SQLTemplates():
     """
 
     PROCESS_ESTIMATED_TIME_SUM_SELECT_SQL="""
-                            SELECT
-                                processes.process_id,
-                                DATE_FORMAT(SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(estimated_time)), 0)),'%k:%i') as estimated_time,
-                                IFNULL(SUM(TIME_TO_SEC(estimated_time)), 0) as estimated_time_sec
-                            FROM
-                                processes
-                                LEFT JOIN tasks
-                                    ON processes.process_id = tasks.process_id
-                            GROUP BY
-                                process_id
+    SELECT
+        processes.process_id,
+        DATE_FORMAT(SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(estimated_time)), 0)),'%k:%i') as estimated_time,
+        IFNULL(SUM(TIME_TO_SEC(estimated_time)), 0) as estimated_time_sec
+    FROM
+        processes
+        LEFT JOIN tasks
+            ON processes.process_id = tasks.process_id
+    GROUP BY
+        process_id
     """
 
     PROCESS_SELECT_SQL="""
@@ -157,7 +157,7 @@ class SQLTemplates():
         DATE_FORMAT(SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(commit_time)), 0)),'%k:%i') as passed_time,
         IFNULL(SUM(TIME_TO_SEC(commit_time)), 0) as passed_time_sec,
         COUNT(DISTINCT commit_date) as passed_date,
-        IFNULL(today_commit_time, 0) as today_commit_time,
+        IFNULL(today_commit_time, '0:00') as today_commit_time,
         status_name
     FROM
         processes
