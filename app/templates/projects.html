@@ -1,36 +1,122 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset='utf-8'>
-  <title>Stopwatch</title>
- <!-- <link rel='stylesheet' type='text/css' href='styles.css'> -->
-</head>
+{% extends "menu.html" %}
+{% block article %}
 
-<body>
-  <h1>プロジェクト一覧</h1>
-  <button type="button" name="edit" value="value">編集</button>
-  <button type="button" name="delete" value="value">消去</button>
-  <button type="button" name="create" value="value">新規作成</button>
-  <table border="1">
-    <tr>
-      <tr bgcolor="#005588"> 
-      <th> </th>   
-      <th><font color=white>プロジェクト</font></th>
-      <th><font color=white>予測時間</font></th>
-      <th><font color=white>経過時間</font></th>
-    </tr>
-    <tr>
-      <td><label><input type="radio" id="d10-2" name="d10-1"></label></td>
-      <td>プロジェクトA</td>
-      <td>27:00</td>
-      <td>24:50</td>
-    </tr>
-    <tr>
-        <td><label><input type="radio" id="d10-2" name="d10-1"></label></td>
-      <td>プロジェクトB</td>
-      <td>12:45</td>
-      <td>11:50</td>
-    </tr>
-  </table>
-</body>
-</html>
+<div class="container">
+  <div class="row">
+    <h2>プロジェクト一覧</h2>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-8 text-center">
+      <table class="table" data-link="row">
+        <thead class="table-info">
+          <tr>
+            <th style="width: 10%" scope="col"></th>
+            <th style="width: 30%" scope="col">プロジェクト名</th>
+            <th style="width: 30%" scope="col">予測時間</th>
+            <th style="width: 30%" scope="col">経過時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for project in projects %}
+          <tr>
+            <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks" value="{{ project.project_id }}"></th>
+            <a href="{{ url_for('project_get', project_id=project.project_id) }}">
+            <td>{{ project.project_name }}</td>
+            <td>{{ project.estimated_time }}</td>
+            <td>{{ project.passed_time }}</td>
+            </a>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ここからモーダル -->
+<div id="mdlNewRecord" class="modal">
+  <div class="container">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>プロジェクト新規作成</h2>
+        <span class="modalClose">✕</span>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div>
+            <label for="InputProject" class="form-label">プロジェクト名</label>
+            <input type="project" class="form-control" id="InputProject" aria-describedby="projectHelp">
+            <div id="projectHelp" class="form-text">入力必須</div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
+            </div>
+            <div class="col">
+              <button type="create" class="btn btn-info modalClose">作成</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="mdlEditRecord" class="modal">
+  <div class="container">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>プロジェクト編集</h2>
+        <span class="modalClose">✕</span>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div>
+            <label for="InputProject" class="form-label">プロジェクト名</label>
+            <input type="project" class="form-control" id="InputProject" aria-describedby="projectHelp">
+            <div id="projectHelp" class="form-text">入力必須</div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
+            </div>
+            <div class="col">
+              <button type="create" class="btn btn-info modalClose">作成</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="mdlDelRecord" class="modal">
+  <div class="container">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>プロジェクト削除</h2>
+        <span class="modalClose">✕</span>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div>
+            <label for="InputProject" class="form-label">プロジェクト名</label>
+            <input type="project" class="form-control" id="InputProject" aria-describedby="projectHelp">
+            <div id="projectHelp" class="form-text">入力必須</div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
+            </div>
+            <div class="col">
+              <button type="create" class="btn btn-info modalClose">作成</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ここまでモーダル -->
+
+{% endblock %}
