@@ -36,13 +36,13 @@
                         {% for process in processes %}
                         <tr id="{{ loop.index }}">
                             <th scope="row"> <input class="form-check-input" type="radio" name="selectRecords" value="{{ process.process_id }},{{ process.process_name }}"></th>
-                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.process_name }}</td>
-                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.status_name }}</td>
-                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.estimated_time }}</td>
-                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.passed_time }}</td>
-                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.deadline }}</td>
-                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.passed_time }}</td>
-                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.worktime_today }}</td>
+                            <td style="cursor:pointer;" onclick="location.href= location.href + '/{{ process.process_id }}'">{{ process.process_name }}</td>
+                            <td style="cursor:pointer;" onclick="location.href= location.href + '/{{ process.process_id }}'">{{ process.status_name }}</td>
+                            <td style="cursor:pointer;" onclick="location.href= location.href + '/{{ process.process_id }}'">{{ process.estimated_time }}</td>
+                            <td style="cursor:pointer;" onclick="location.href= location.href + '/{{ process.process_id }}'">{{ process.passed_time }}</td>
+                            <td style="cursor:pointer;" onclick="location.href= location.href + '/{{ process.process_id }}'">{{ process.deadline }}</td>
+                            <td style="cursor:pointer;" onclick="location.href= location.href + '/{{ process.process_id }}'">{{ process.passed_time }}</td>
+                            <td style="cursor:pointer;" onclick="location.href= location.href + '/{{ process.process_id }}'">{{ process.worktime_today }}</td>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
