@@ -1,7 +1,13 @@
 {% extends "menu.html" %}
 {% block title %}
-タスク一覧
+{{ project_name }} > {{ process_name }}
 {% endblock %}
+
+{% block navigation %}
+<a href="/{{ project_id }}"><i class="fa-regular fa-square-caret-left fa-2xl"></i></a>
+{% endblock %}
+
+
 {% block article %}
 
 <div class="container">

@@ -213,7 +213,8 @@ def task_get(project_id:int, process_id:int) -> str:
                             tasks=tasks, 
                             status_names = status_names, 
                             priorities = priorities,  
-                            project_id = project_id, 
+                            project_id = project_id,
+                            project_name = "プロジェクトA", 
                             process_id = process_id,
                             process_name = process_name)
     
