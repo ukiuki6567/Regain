@@ -64,7 +64,7 @@ CREATE TABLE commits(
     commit_time TIME NOT NULL,
     PRIMARY KEY (commit_id),
     FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    INDEX (commit_id)
+    INDEX (commit_id),
     UNIQUE unique_task_id_cammit_date_index (task_id, commit_date)
 ) ENGINE = InnoDB;
 
