@@ -18,7 +18,9 @@ class SQLTemplates():
     UPDATE
         processes
     SET
-        process_name = '{process_name}'
+        process_name = '{process_name}',
+        status_id = {status_id},
+        deadline = CAST('{deadline}' as DATE)
     WHERE
         process_id = {process_id}
     """
@@ -177,7 +179,7 @@ class SQLTemplates():
 
     PROCESS_STATUS_NAME_SELECT_SQL = """
     SELECT
-        status_name
+        status_id, status_name
     FROM
         process_statuses
     """
