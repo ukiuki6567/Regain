@@ -1,41 +1,257 @@
 {% extends "menu.html" %}
-{% block content %}
-<blockquote>
-<h3>プロセス一覧</h3>
-</blockquote>
-<table>
-<tr>
-<th>process_id</th>
-<th>process_name</th>
-<th>estimated_time</th>
-<th>predict_time</th>
-<th>passed_time</th>
-<th>status_name</th>
-<th>deadline</th>
-</tr>
-{% for process in processes %}
-        <tr>
-        <td>{{ process.process_id}}</td>
-        <td>{{ process.process_name}}</td>
-        <td>{{ process.estimated_time}}</td>
-        <td>{{ process.predict_time}}</td>
-        <td>{{ process.passed_time}}</td>
-        <td>{{ process.status_name}}</td>
-        <td>{{ process.deadline}}</td>
-        </tr>
-{% endfor %}
-</table>
-<blockquote>
-<h3>ステータスプルダウン一覧</h3>
-</blockquote>
-<table>
-<tr>
-<th>status_name</th>
-</tr>
-{% for status_name in status_names %}
-        <tr>
-        <td>{{ status_name.status_name}}</td>
-        </tr>
-{% endfor %}
-</table>
+{% block article %}
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h2>{{ project_name }} 工程一覧</h2>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-8 text-center">
+                <table class="table">
+                    <thead class="table-info">
+                        <tr>
+                            <th rowspan="2" style="width: 5%" scope="col"></th>
+                            <th rowspan="2" style="width: 20%" scope="col">工程</th>
+                            <th rowspan="2" style="width: 10%" scope="col">ステータス</th>
+                            <th rowspan="2" style="width: 10%" scope="col">見積時間</th>
+                            <th rowspan="2" style="width: 10%" scope="col">経過時間</th>
+                            <th rowspan="2" style="width: 10%" scope="col">締切</th>
+                            <th style="width: 5%;background-color:#e0ffc1" scope="col"><span id="day1"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day2"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day3"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day4"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day5"></span></th>
+                        </tr>
+                        <tr>
+                            <th style="width: 5%;background-color:#e0ffc1" scope="col"><span id="day1_whatday"></span>
+                            </th>
+                            <th style="width: 5%" scope="col"><span id="day2_whatday"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day3_whatday"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day4_whatday"></span></th>
+                            <th style="width: 5%" scope="col"><span id="day5_whatday"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for process in processes %}
+                        <tr id="{{ loop.index }}">
+                            <th scope="row"> <input class="form-check-input" type="radio" name="selectRecords" value="{{ process.process_id }},{{ process.process_name }}"></th>
+                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.process_name }}</td>
+                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.status_name }}</td>
+                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.estimated_time }}</td>
+                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.passed_time }}</td>
+                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.deadline }}</td>
+                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.passed_time }}</td>
+                            <td style="cursor:pointer;" onclick="location.href='{{ process.process_id }}'">{{ process.worktime_today }}</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- ここからモーダル -->
+    <div id="mdlNewRecord" class="modal">
+        <div class="container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>工程新規作成</h2>
+                    <span class="modalClose">✕</span>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div>
+                            <label for="InputProcess" class="form-label">工程名</label>
+                            <input type="process" class="form-control" id="InputProcess" aria-describedby="processHelp">
+                            <div id="processHelp" class="form-text">入力必須</div>
+                        </div>
+                        <div>
+                            <label for="InputDeadline" class="form-label">締切</label>
+                            <input type="deadline" class="form-control" id="InputDeadline">
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
+                            </div>
+                            <div class="col">
+                                <button type="create" class="btn btn-info modalClose">作成</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mdlEditRecord" class="modal">
+        <div class="container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>工程編集</h2>
+                    <span class="modalClose">✕</span>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div>
+                            <label for="InputProcess" class="form-label">工程名</label>
+                            <input type="process" class="form-control" id="InputProcess" aria-describedby="processHelp">
+                            <div id="processHelp" class="form-text">入力必須</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
+                            </div>
+                            <div class="col">
+                                <button type="create" class="btn btn-info modalClose">作成</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mdlDelRecord" class="modal">
+        <div class="container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>工程削除</h2>
+                    <span class="modalClose">✕</span>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div>
+                            <label for="InputProcess" class="form-label">工程名</label>
+                            <input type="process" class="form-control" id="InputProcess" aria-describedby="processHelp">
+                            <div id="processHelp" class="form-text">入力必須</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <button type="cancel" class="btn btn-info modalClose">キャンセル</button>
+                            </div>
+                            <div class="col">
+                                <button type="create" class="btn btn-info modalClose">作成</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ここまでモーダル -->
+</body>
+<!-- script for Date and Day of the week -->
+<script>
+    const weeks = ["日", "月", "火", "水", "木", "金", "土"];
+    var now = new Date();
+    for (i = 1; i <= 5; i++) {
+        document.getElementById('day' + i).innerHTML = now.getDate();
+        document.getElementById('day' + i + '_whatday').innerHTML = weeks[now.getDay()];
+        if (now.getDay() == 5) {
+            now.setDate(now.getDate() + 3);
+        }
+        else {
+            now.setDate(now.getDate() + 1);
+        }
+    }
+
+    var today = new Date();
+    for (let i = 1; i <={{processes | length}}; i++) { //VSCODEだとエラーみたいに表示されるが問題なし
+        let collection = document.getElementById(i).children;
+        var deadline_Date = new Date(today.getFullYear().toString() + "/" + collection[5].innerHTML + " 23:59:59");
+        // console.log(today.getFullYear().toString());
+        // hh:mm を:で分割して計算
+        var estimated_time = collection[3].innerHTML;
+        var passed_time = collection[4].innerHTML;
+        // console.log(estimated_time);
+        var estimated_time_To_split = estimated_time.split(':');
+        var passed_time_To_split = passed_time.split(':');
+        // console.log( estimated_time_To_split );
+        // console.log(parseInt(estimated_time_To_split[0]) );
+        // console.log(parseInt(estimated_time_To_split[1]) );
+        var estimated_time_To_split_To_Hours = parseInt(estimated_time_To_split[0]);
+        var estimated_time_To_split_To_Minutes = parseInt(estimated_time_To_split[1]);
+        var passed_time_To_split_To_Hours = parseInt(passed_time_To_split[0]);
+        var passed_time_To_split_To_Minutes = parseInt(passed_time_To_split[1]);
+        // console.log(estimated_time_To_split_To_Hours);
+        // console.log(estimated_time_To_split_To_Minutes);
+        var estimated_time_Date_To_Minutes = 60 * estimated_time_To_split_To_Hours + estimated_time_To_split_To_Minutes;
+        var passed_time_Date_To_Minutes = 60 * passed_time_To_split_To_Hours + passed_time_To_split_To_Minutes;
+        // console.log(estimated_time_Date_To_Minutes);
+        // console.log(passed_time_Date_To_Minutes);
+        if (passed_time_Date_To_Minutes < estimated_time_Date_To_Minutes) {
+            if (passed_time_Date_To_Minutes == 0) {
+                // 経過時間０で未着手の場合を最初に除外しておく。
+                day_to_finish = -1;
+            }
+            else {
+                // 経過時間が見積時間を下回り、未完了なはずの場合
+                day_to_finish = Math.ceil(estimated_time_Date_To_Minutes / passed_time_Date_To_Minutes); //複数日やってる場合の処理を追加
+                // console.log(day_to_finish);
+            }
+        }
+        else {
+            // 経過時間が見積時間を上回り、すでに完了しているはずの場合。何か色とか付けるべき？
+            day_to_finish = 0;
+        }
+        // console.log(day_to_finish);
+        // console.log(parseInt((deadline_Date - today) / 1000 / 60 / 60 / 24));
+        var day_to_deadline = Math.ceil((deadline_Date - today) / 1000 / 60 / 60 / 24);
+        // day_to_finish とdeadline_Dateで比較
+        for (j = 1; j <= Math.min(day_to_finish, 5); j++) {
+            // タスク完了までの日数と締め切りまでの日数を比較
+            if (day_to_finish <= day_to_deadline) {
+                // 締め切りまでにタスクが完了する場合
+                collection[5 + j].style = 'background-color:#a9ceec';
+            }
+            else {
+                // 締め切りまでにタスクが完了しない場合
+                if (j < (day_to_deadline + 1)) { // ここあやしい
+                    // 日付が締め切りまでは青色で塗る
+                    //   collection[5 + j].style = 'background-color:#a9ceec';
+                    collection[5 + j].style = 'background-color:#a9ceec';
+                    // console.log("j=" + j);
+                }
+                else {
+                    // 日付が締め切りを過ぎてからは青色で塗る
+                    collection[5 + j].style = 'background-color:#FADBDA';
+                    collection[5].style = 'background-color:#FADBDA';
+                }
+
+            }
+
+        }
+
+        for (j = 1; j <= 5; j++) {
+            if (deadline_Date.getDate() == document.getElementById('day' + j).innerHTML) {
+                collection[5 + j].style.borderRight = "solid";
+            }
+        }
+
+        // 今日の取り組み時間での塗分け
+        switch (collection[6].innerHTML) {
+            case '0:00':
+                if (collection[4].innerHTML == '0:00') {
+                    collection[6].style = 'background-color:yellow';
+                }
+                else {
+                    collection[6].style = 'background-color:#e0ffc1';
+                }
+                break;
+            default:
+                collection[6].style = 'background-color:#0095d9';
+        }
+        // 締め切りを過ぎているかの判定
+        if (deadline_Date < today) {
+            for (j = 1; j <= 10; j++) {
+                collection[j].style = 'background-color:red';
+            }
+        }
+    }
+</script>
+</body>
 {% endblock %}

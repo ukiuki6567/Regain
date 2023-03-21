@@ -14,11 +14,6 @@ bp = Blueprint('project', __name__, url_prefix="/")
 bp.register_blueprint(process.bp)
 
 #新規プロジェクト作成
-#受信JSON例
-# {
-#   "project_name":"projectのなまえ",
-#   "estimated_time":"24:00"
-# }
 @bp.route('/create', methods=['POST'])
 def project_create():
     """
@@ -40,16 +35,12 @@ def project_create():
         project_insert_sql =  sql_temp.PROJECT_INSERT_SQL.format(project_name = project_name)
         rows = regain_db_driver.sql_run(project_insert_sql)
         rows = regain_db_driver.sql_run("COMMIT")
+        regain_db_driver.db_close()
+        return f"Project with project_name: {project_name} created.", 200
+    
     except Exception as e:
-        print ('=== エラー内容 ===')
-        print ('type:' + str(type(e)))
-        print ('args:' + str(e.args))
-        print ('e自身:' + str(e))
-        return jsonify() # 本当はエラーページの表示をしたい
-
-    #dbDriverのクローズと200OK返却
-    regain_db_driver.db_close()
-    return jsonify()
+        print("Error creating project: {e}") # 本当はここでLoggerを使いたい
+        return f"Error creating project with project_name: {project_name}.\nError: {str(e)}", 500
 
 #既存プロジェクト編集
 @bp.route('/edit', methods=['POST'])
@@ -154,6 +145,9 @@ def process_get(project_id):
     
 
     try:
+        #プロジェクト名取得
+        project_name = regain_db_driver.sql_run(sql_temp.PROJECT_NAME_SELECT_SQL.format(project_id = project_id))
+
         #本日の日付取得
         now = datetime.datetime.now()
         now_str = now.strftime("%Y-%m-%d")
@@ -185,16 +179,14 @@ def process_get(project_id):
                 required_day = one_process["estimated_time_sec"] / passed_time_par_day
                 predict_time = required_day - one_process["passed_date"]
             one_process["predict_time"] = math.ceil(predict_time)
+            one_process["worktime_today"] = one_process["today_commit_time"]
             
         #プロセスステータス一覧取得SQL
         status_names = regain_db_driver.sql_run(sql_temp.PROCESS_STATUS_NAME_SELECT_SQL)
-    except Exception as e:
-        print ('=== エラー内容 ===')
-        print ('type:' + str(type(e)))
-        print ('args:' + str(e.args))
-        print ('e自身:' + str(e))
-        return jsonify() # 本当はエラーページの表示をしたい
+
+        regain_db_driver.db_close()
+        return render_template('processes.html', title='processes', processes=processes, status_names = status_names)
     
-    #dbDriverのクローズと値返却
-    regain_db_driver.db_close()
-    return render_template('processes.html', title='processes', processes=processes, status_names = status_names)
+    except Exception as e:
+        print("Error getting process: {e}") # 本当はここでLoggerを使いたい
+        return f"Error getting process with project_id: {project_id}.\nError: {str(e)}", 500
