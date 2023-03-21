@@ -4,48 +4,269 @@
 {% endblock %}
 {% block article %}
 
-    <div class="container">
-        <div class="row">
-            <h2>タスク一覧</h2>
+<div class="container">
+    <div class="row">
+        <h2>タスク一覧</h2>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-8 text-center">
+            <table class="table">
+                <thead class="table-info">
+                    <tr>
+                        <th style="width: 5%" scope="col"></th>
+                        <th style="width: 20%" scope="col">タスク名</th>
+                        <th style="width: 15%" scope="col">ステータス</th>
+                        <th style="width: 10%" scope="col">優先度</th>
+                        <th style="width: 15%" scope="col">予測時間</th>
+                        <th style="width: 15%" scope="col">経過時間</th>
+                        <th style="width: 10%" scope="col">〆切</th>
+                        <th style="width: 10%" scope="col">取り組む</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- この中をfor文で繰り返してtaskの数可変にする -->
+                    {% for task in tasks %}
+                    <tr>
+                        <!-- jinja2に代入させるためのflask構文、動的になる -->
+                        <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks" value="{{ task.task_id }},{{ task.task_name }}"
+                        ></th>
+                        <td>{{ task.task_name }}</td>
+                        <td>{{ task.status_name }}</td>
+                        <td>{{ task.priority_name }}</td>
+                        <td>{{ task.estimated_time }}</td>
+                        <td>{{ task.passed_time }}</td>
+                        <td>{{ task.deadline }}</td>
+                        <td><button type="button"
+                                onclick="location.href='{{project_id}}/{{process_id}}/{{ task.task_id }}'"
+                                class="btn btn-info w-20 me-5 px-3 text">START</button></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-8 text-center">
-                <table class="table">
-                    <thead class="table-info">
-                        <tr>
-                            <th style="width: 5%" scope="col"></th>
-                            <th style="width: 20%" scope="col">タスク名</th>
-                            <th style="width: 15%" scope="col">ステータス</th>
-                            <th style="width: 10%" scope="col">優先度</th>
-                            <th style="width: 15%" scope="col">予測時間</th>
-                            <th style="width: 15%" scope="col">経過時間</th>
-                            <th style="width: 10%" scope="col">〆切</th>
-                            <th style="width: 10%" scope="col">取り組む</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- この中をfor文で繰り返してtaskの数可変にする -->
-                        {% for i in range(3) %}
-                        <tr>
-                            <!-- jinja2に代入させるためのflask構文、動的になる -->
-                            <th scope="row"> <input class="form-check-input" type="radio" name="selectTasks"></th>
-                            <td>{{ task_name }}</td>
-                            <td>{{ status_name }}</td>
-                            <td>{{ priority_name }}</td>
-                            <td>{{ estimated_time }}</td>
-                            <td>{{ passed_time }}</td>
-                            <td>{{ deadline }}</td>
-                            <td><button type="button" class="btn btn-info w-20 me-5 px-3 text">START</button></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    </div>
+</div>
+<!-- ここからモーダル -->
+<div id="mdlNewRecord" class="modal">
+    <div class="container">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>タスク新規作成</h2>
+                <span class="modalClose">✕</span>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div>
+                        <label for="InputTask" class="form-label">タスク名</label>
+                        <input type="text" class="form-control" id="inputNewTitle" aria-describedby="taskHelp">
+                        <div id="taskHelp" class="form-text">入力必須</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-info modalClose">キャンセル</button>
+                        </div>
+                        <div class="col">
+                            <button id="btnCreate" type="button" class="btn btn-info modalClose">作成</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
+</div>
+
+<div id="mdlEditRecord" class="modal">
+    <div class="container">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>タスク編集</h2>
+                <span class="modalClose">✕</span>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div>
+                        <label for="InputTask" class="form-label selected-task-name">タスク名</label>
+                        <input type="text" class="form-control" id="inputEditTitle" aria-describedby="taskHelp">
+                        <div id="taskHelp" class="form-text">入力必須</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-info modalClose">キャンセル</button>
+                        </div>
+                        <div class="col">
+                            <button id="btnEdit" type="button" class="btn btn-info modalClose">更新</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="mdlDelRecord" class="modal">
+    <div class="container">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>タスク削除</h2>
+                <span class="modalClose">✕</span>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div>
+                        <label for="Inputtask" class="form-label selected-task-name">タスク名</label>
+                        <div id="taskHelp" class="form-text">入力必須</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-info modalClose">キャンセル</button>
+                        </div>
+                        <div class="col">
+                            <button id="btnDelete" type="button" class="btn btn-info modalClose">削除</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ここまでモーダル -->
+
+<!-- モーダルの処理 -->
+<script>
+    //対象エレメント取得
+    const btnCreate = document.getElementById('btnCreate');
+    const inputNewTitle = document.getElementById('inputNewTitle');
+    const btnEdit = document.getElementById('btnEdit');
+    const inputEditTitle = document.getElementById('inputEditTitle');
+    const btnDelete = document.getElementById('btnDelete');
+    const selectedTaskNameLabel = document.querySelectorAll(".selected-task-name");
+    const radioBtn = document.querySelectorAll(".form-check-input");
+
+    //選択しているタスクの情報
+    let taskId;
+    let taskName;
+
+    //初期状態として一つラジオボタンを有効にする(タスクが存在している時のみ)
+    //タスクが一つもない状態では編集・削除ボタンは押せないようにする
+    //挙動要相談
+    if (radioBtn.length > 0) {
+        radioBtn[0].checked = true;
+        taskId = radioBtn[0].value.split(',')[0];
+        taskName = radioBtn[0].value.split(',')[1];
+        selectedTaskNameLabel.forEach(label => {
+            label.innerHTML = "タスク名　" + taskName;
+        });
+    } else {
+        btnEdit.disabled = true;
+        btnDelete.disabled = true;
+        selectedTaskNameLabel.forEach(label => {
+            label.innerHTML = "タスク未登録";
+        });
+    }
+
+    //ラジオボタンクリック時の挙動
+    //task_idとtask_name更新
+    //モーダルのラベル更新
+    //挙動要相談
+    radioBtn.forEach(btn => {
+        btn.addEventListener('click', () => {
+            taskId = btn.value.split(',')[0];
+            taskName = btn.value.split(',')[1];
+            selectedTaskNameLabel.forEach(label => {
+                label.innerHTML = "タスク名　" + taskName;
+            });
+        })
+    });
+
+    //作成ボタンクリック時の挙動
+    //タスク名が未入力ならなにもしない
+    //タスク名が記載されてたらPOST処理をして、自分自身へリダイレクト
+    btnCreate.addEventListener('click', () => {
+        if (inputNewTitle.value == "") {
+            return;
+        }
+        // 送信データ用意
+        // 例:
+        // {
+        //     "task_name": "taskのなまえ"
+        // }
+        json_data = { 'task_name': inputNewTitle.value };
+        //POST通信
+        url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
+        doPost(url + 'create', json_data);
+        //自分自身へリダイレクト
+        location.href = url;
+    });
+
+    //編集ボタンクリック時の挙動
+    //タスク名が未入力ならなにもしない
+    //タスク名が記載されてたらPOST処理をして、自分自身へリダイレクト
+    btnEdit.addEventListener('click', () => {
+        if (inputEditTitle.value == "") {
+            return;
+        }
+        // 送信データ用意
+        // 例:
+        // {
+        //     "task_id": 12345,
+        //     "task_name": "ほげほげ"
+        // }
+        json_data = {
+            'task_id': taskId,
+            'task_name': inputEditTitle.value
+        };
+        //POST通信
+        url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
+        doPost(url + 'edit', json_data);
+        //自分自身へリダイレクト
+        location.href = url;
+    });
+
+    //削除ボタンクリック時の挙動
+    //POST処理をして、自分自身へリダイレクト
+    btnDelete.addEventListener('click', () => {
+        // 送信データ用意
+        // 例:
+        // {
+        //     "task_id": 12345
+        // }
+        json_data = {
+            'task_id': taskId
+        };
+        //POST通信
+        url = document.URL.match(/.*?\/\/.*?\//)[0];//スラッシュ3個目まで切り取り
+        doDelete(url + '/delete', json_data);
+        //自分自身へリダイレクト
+        location.href = url;
+    });
+
+    //データをPOST通信する
+    function doPost(url, date) {
+        var json_text = JSON.stringify(date);//Json文字列へ変換
+        var xhr = new XMLHttpRequest();//インスタンス作成
+        xhr.onload = () => {//レスポンスを受け取った時の処理、今は何もせず
+        };
+        xhr.onerror = () => {//エラーが起きた時の処理、今は何もせず
+        };
+        xhr.open("POST", url, false);//第三引数falseで同期（応答をまつ）。
+        xhr.setRequestHeader("Content-Type", "application/json");//データタイプJSONに設定
+        xhr.send(json_text);
+    }
+
+    //データをDELETE通信する
+    function doDelete(url, date) {
+        var json_text = JSON.stringify(date);//Json文字列へ変換
+        var xhr = new XMLHttpRequest();//インスタンス作成
+        xhr.onload = () => {//レスポンスを受け取った時の処理、今は何もせず
+        };
+        xhr.onerror = () => {//エラーが起きた時の処理、今は何もせず
+        };
+        xhr.open("DELETE", url, false);//第三引数falseで同期（応答をまつ）。
+        xhr.setRequestHeader("Content-Type", "application/json");//データタイプJSONに設定
+        xhr.send(json_text);
+    }
+</script>
+
 
 
 {% endblock %}
