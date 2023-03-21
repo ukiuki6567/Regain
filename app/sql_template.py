@@ -189,7 +189,7 @@ class SQLTemplates():
         tasks.task_id,
         task_name,
         DATE_FORMAT(estimated_time,'%k:%i') as estimated_time,
-        DATE_FORMAT(deadline,'%m/%e') as deadline,
+        DATE_FORMAT(deadline,'%c/%e') as deadline,
         DATE_FORMAT(sec_to_time(IFNULL(sum(time_to_sec(commit_time)),0)),'%k:%i') as passed_time,
         status_name,
         priority_name

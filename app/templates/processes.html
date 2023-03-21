@@ -339,9 +339,9 @@
     //プロジェクト名が未入力ならなにもしない
     //プロジェクト名が記載されてたらPOST処理をして、自分自身へリダイレクト
     btnEdit.addEventListener('click', () => {
-      if(inputEditTitle.value == ""){
+    if(inputEditTitle.value == ""){
         return;
-      }
+     }
       // 送信データ用意
       // 例:
       // {
@@ -351,12 +351,12 @@
       json_data = {
         'process_id': processId,
         'process_name': inputEditTitle.value,
-        'process_status': inputEditStatus.value,
-        'process_deadline': inputEditDeadline.value
+        'status_id': Number(document.getElementById('inputEditStatus').value),
+        'deadline': document.getElementById('inputEditDeadline').value
       };
       //POST通信
       url = document.URL.match(/.*?\/\/.*?\/[0-9]*/)[0];//スラッシュ3個目まで切り取り
-      doPost(url + 'edit', json_data);
+      doPost(url + '/edit', json_data);
       //自分自身へリダイレクト
       location.href = url;
     });
