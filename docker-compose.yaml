@@ -9,10 +9,11 @@ services:
       - Regain-network
     ports:
       - "5080:80"
+      - "443:443"
     container_name: Regain-app
     volumes:
       - ./app:/usr/src/app
-    # command: flask run --host=0.0.0.0
+      - /etc/letsencrypt:/etc/letsencrypt
 
   db:
     build:

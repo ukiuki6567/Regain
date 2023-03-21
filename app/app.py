@@ -35,4 +35,4 @@ def project_get():
         return f"Error getting project.\nError: {str(e)}", 500
 
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0', port=80)
+    app.run(debug=True, port=443, ssl_context=('/etc/letsencrypt/live/kokiota.dev/fullchain.pem', '/etc/letsencrypt/live/kokiota.dev/privkey.pem'), host='0.0.0.0')
