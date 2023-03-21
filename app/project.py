@@ -185,7 +185,7 @@ def process_get(project_id):
         status_names = regain_db_driver.sql_run(sql_temp.PROCESS_STATUS_NAME_SELECT_SQL)
 
         regain_db_driver.db_close()
-        return render_template('processes.html', title='processes', processes=processes, status_names = status_names)
+        return render_template('processes.html', title='processes', processes=processes, status_names = status_names, project_id = project_id, project_name = project_name)
     
     except Exception as e:
         print("Error getting process: {e}") # 本当はここでLoggerを使いたい

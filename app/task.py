@@ -185,7 +185,7 @@ def timer_get(project_id, process_id, task_id):
 
     #dbDriverのクローズと値返却
     regain_db_driver.db_close()
-    return render_template('timer.html', title='timer', task_name = task_name, commit_time = commit_time)
+    return render_template('timer.html', title='timer', task_name = task_name, commit_time = commit_time, project_id = project_id, process_id = process_id, task_i= task_id)
 
 #タイマー情報更新
 @bp.route('/<int:task_id>', methods=['POST'])
