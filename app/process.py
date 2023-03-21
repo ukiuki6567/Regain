@@ -152,7 +152,7 @@ def task_get(project_id, process_id):
 
     try:
         #プロセス名取得
-        process_name = regain_db_driver.sql_run(sql_temp.PROJECT_NAME_SELECT_SQL.format(project_id = project_id))
+        process_name = regain_db_driver.sql_run(sql_temp.PROCESS_NAME_SELECT_SQL.format(process_id = process_id))[0]["process_name"]
 
         #タスク一覧取得SQL
         task_select_sql = sql_temp.TASK_SELECT_SQL.format(
