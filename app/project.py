@@ -15,7 +15,7 @@ bp.register_blueprint(process.bp)
 
 #新規プロジェクト作成
 @bp.route('/create', methods=['POST'])
-def project_create():
+def project_create() -> int:
     """
     新規にプロジェクトを作成する関数。
     Method: POST
@@ -23,6 +23,9 @@ def project_create():
     {
         "project_name": "projectのなまえ"
     }
+
+    Returns:
+        int: 200 (OK) or 500 (NG)
     """
     params = request.get_json()
     project_name = params["project_name"]
@@ -36,15 +39,21 @@ def project_create():
         rows = regain_db_driver.sql_run(project_insert_sql)
         rows = regain_db_driver.sql_run("COMMIT")
         regain_db_driver.db_close()
-        return f"Project with project_name: {project_name} created.", 200
+
+        # 200 (OK)
+        result_num = 200
+        return f"Project with project_name: {project_name} created.", result_num
     
     except Exception as e:
         print("Error creating project: {e}") # 本当はここでLoggerを使いたい
-        return f"Error creating project with project_name: {project_name}.\nError: {str(e)}", 500
+
+        # 500 (NG)
+        result_num = 500
+        return f"Error creating project with project_name: {project_name}.\nError: {str(e)}", result_num
 
 #既存プロジェクト編集
 @bp.route('/edit', methods=['POST'])
-def project_edit():
+def project_edit() -> int:
     """
     既存のプロジェクト情報を変更する関数。
     プロジェクト名の情報変更があった場合、その内容をDBに更新する。
@@ -55,8 +64,8 @@ def project_edit():
         "project_name": "ほげほげ"
     }
 
-    Return:
-        200(OK) or 500(NG) 
+    Returns:
+        int: 200(OK) or 500(NG)
     """
 
     # 処理開始
@@ -83,16 +92,22 @@ def project_edit():
         rows = regain_db_driver.sql_run("COMMIT")
 
         regain_db_driver.db_close()
-        return f"Project with project_id: {project_id} edited.", 200
+
+        # 200 (OK)
+        result_num = 200
+        return f"Project with project_id: {project_id} edited.", result_num
     
     except Exception as e:
         print("Error editing project: {e}") # 本当はここでLoggerを使いたい
-        return f"Error editing project with project_id: {project_id}.\nError: {str(e)}", 500
+
+        # 500 (NG)
+        result_num = 500
+        return f"Error editing project with project_id: {project_id}.\nError: {str(e)}", result_num
 
 
 #既存プロジェクト削除
 @bp.route('/delete', methods=['DELETE'])
-def project_delete():
+def project_delete() -> int:
     """
     既存プロジェクト削除処理。
     受け取ったproject_idに対応するプロジェクトを削除する。
@@ -102,8 +117,8 @@ def project_delete():
         "project_id": 12345
     }
 
-    Return:
-        200(OK) or 500(NG)
+    Returns:
+        int: 200(OK) or 500(NG)
     """
     # 処理開始
     print("処理開始: /delete")
@@ -126,18 +141,30 @@ def project_delete():
         rows = regain_db_driver.sql_run("COMMIT")
 
         regain_db_driver.db_close()
-        return f"Project with project_id: {project_id} deleted.", 200
+
+        # 200 (OK)
+        result_num = 200
+        return f"Project with project_id: {project_id} deleted.", result_num
 
     except Exception as e:
         print(f"Error deleting project: {e}") # 本当はここでLoggerを使いたい
-        return f"Error deleting project with project_id: {project_id}.\nError: {str(e)}", 500
+
+        # 500 (NG)
+        result_num = 500
+        return f"Error deleting project with project_id: {project_id}.\nError: {str(e)}", result_num
 
 #既存プロジェクト選択、プロセス一覧表示
 @bp.route('/<int:project_id>')
-def process_get(project_id):
+def process_get(project_id:int) -> str:
     """
     プロセス一覧を表示する関数。
     Method: GET
+
+    Args:
+        project_id (int): 各プロジェクトに割り振られたID
+
+    Returns:
+        str: htmlテンプレート (processes.html)
     """
     
     #dbDriverの生成
@@ -189,4 +216,7 @@ def process_get(project_id):
     
     except Exception as e:
         print("Error getting process: {e}") # 本当はここでLoggerを使いたい
-        return f"Error getting process with project_id: {project_id}.\nError: {str(e)}", 500
+
+        # 500 (NG)
+        result_num = 500
+        return f"Error getting process with project_id: {project_id}.\nError: {str(e)}", result_num
