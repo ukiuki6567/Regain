@@ -11,7 +11,7 @@ bp = Blueprint('task', __name__, url_prefix="/<int:process_id>")
 
 #新規タスク作成
 @bp.route('/create', methods=['POST'])
-def task_create(project_id, process_id):
+def task_create(project_id:int, process_id:int) -> int:
     """
     新規にタスクを作成する関数。
     ステータスは初期値となる。
@@ -23,6 +23,13 @@ def task_create(project_id, process_id):
         "estimated_time":"24:00",
         "deadline":"2023-02-05"
     }
+
+    Args:
+        project_id (int): 各プロジェクトに割り振られたID
+        process_id (int): 各プロセスに割り振られたID
+
+    Returns:
+        int: 200(OK) or 500(NG)
     """
     params = request.get_json()
     task_name = params["task_name"]
@@ -46,15 +53,21 @@ def task_create(project_id, process_id):
         rows = regain_db_driver.sql_run(task_insert_sql)
         rows = regain_db_driver.sql_run("COMMIT")
         regain_db_driver.db_close()
-        return f"Task with task_name: {task_name} created.", 200
+
+        # 200 (OK)
+        result_num = 200
+        return f"Task with task_name: {task_name} created.", result_num
 
     except Exception as e:
         print("Error creating task: {e}") # 本当はここでLoggerを使いたい
-        return f"Error creating task with task_name: {task_name}.\nError: {str(e)}", 500
+        
+        # 500 (NG)
+        result_num = 500
+        return f"Error creating task with task_name: {task_name}.\nError: {str(e)}", result_num
 
 #既存タスク編集
 @bp.route('/edit', methods=['POST'])
-def task_edit(project_id, process_id):
+def task_edit(project_id:int, process_id:int) -> int: 
     """
     既存のプロジェクト情報を変更する関数。
     プロジェクト名の情報変更があった場合、その内容をDBに更新する。
@@ -67,8 +80,12 @@ def task_edit(project_id, process_id):
         "deadline": "2023-02-23"
     }
 
-    Return:
-        200(OK) or 500(NG) 
+    Args:
+        project_id (int): 各プロジェクトに割り振られたID
+        process_id (int): 各プロセスに割り振られたID
+
+    Returns:
+        int: 200(OK) or 500(NG)
     """
 
     # 処理開始
@@ -99,16 +116,22 @@ def task_edit(project_id, process_id):
         rows = regain_db_driver.sql_run(task_update_sql)
         rows = regain_db_driver.sql_run("COMMIT")
         regain_db_driver.db_close()
-        return f"Task with task_id: {task_id} edited.", 200
+
+        # 200 (OK)
+        result_num = 200
+        return f"Task with task_id: {task_id} edited.", result_num
 
     except Exception as e:
         print("Error editing task: {e}") # 本当はここでLoggerを使いたい
-        return f"Error editing task with task_id: {task_id}.\nError: {str(e)}", 500
+
+        # 500 (NG)
+        result_num = 500
+        return f"Error editing task with task_id: {task_id}.\nError: {str(e)}", result_num
 
 
 #既存タスク削除
 @bp.route('/delete', methods=['DELETE'])
-def task_delete(project_id, process_id):
+def task_delete(project_id:int, process_id:int) -> int:
     """
     既存タスク削除処理。
     受け取ったtask_idに対応するプロジェクトを削除する。
@@ -118,8 +141,12 @@ def task_delete(project_id, process_id):
         "task_id": 12345
     }
 
-    Return:
-        200(OK) or 500(NG)
+    Args:
+        project_id (int): 各プロジェクトに割り振られたID
+        process_id (int): 各プロセスに割り振られたID
+
+    Returns:
+        int: 200(OK) or 500(NG)
     """
     # 処理開始
     print(f"処理開始: /{project_id}/{process_id}/delete")
@@ -140,19 +167,33 @@ def task_delete(project_id, process_id):
         rows = regain_db_driver.sql_run("COMMIT")
 
         regain_db_driver.db_close()
-        return f"Task with task_id: {task_id} deleted.", 200
+
+        # 200 (OK)
+        result_num = 200
+        return f"Task with task_id: {task_id} deleted.", result_num
 
     except Exception as e:
         print("Error deleting task: {e}") # 本当はここでLoggerを使いたい
-        return f"Error deleting task with task_id: {task_id}.\nError: {str(e)}", 500
+
+        # 500 (NG)
+        result_num = 500
+        return f"Error deleting task with task_id: {task_id}.\nError: {str(e)}", result_num
 
 
 #既存タスク選択、タイマー情報表示
 @bp.route('/<int:task_id>', methods=['GET'])
-def timer_get(project_id, process_id, task_id):
+def timer_get(project_id:int, process_id:int, task_id:int) -> str:
     """
     タイマー情報表示。
     Method: GET
+
+    Args:
+        project_id (int): 各プロジェクトに割り振られたID
+        process_id (int): 各プロセスに割り振られたID
+        task_id (int): 各タスクに割り振られたID
+
+    Returns:
+        str: htmlテンプレート (timer.html)
     """
     #本日の日付取得
     now = datetime.datetime.now()
@@ -176,20 +217,21 @@ def timer_get(project_id, process_id, task_id):
         commit_time = "0:00"                                
         if(len(rows) != 0) :
             commit_time = rows[0]["commit_time"]
-    except Exception as e:
-        print ('=== エラー内容 ===')
-        print ('type:' + str(type(e)))
-        print ('args:' + str(e.args))
-        print ('e自身:' + str(e))
-        return jsonify() # 本当はエラーページの表示をしたい
 
-    #dbDriverのクローズと値返却
-    regain_db_driver.db_close()
-    return render_template('timer.html', title='timer', task_name = task_name, commit_time = commit_time)
+        #dbDriverのクローズと値返却
+        regain_db_driver.db_close()
+        return render_template('timer.html', title='timer', task_name = task_name, commit_time = commit_time, project_id = project_id, process_id = process_id, task_i= task_id)
+
+
+    except Exception as e:
+        # 500 (NG)
+        result_num = 500
+        return f"Error displaing timer with project_id: {project_id}, process_id: {process_id}, task_id: {task_id}.\nError: {str(e)}", result_num
+
 
 #タイマー情報更新
 @bp.route('/<int:task_id>', methods=['POST'])
-def timer_post(project_id, process_id, task_id):
+def timer_post(project_id:int, process_id:int, task_id:int) -> int:
     """
     対象タスクのcommit時間を更新する関数。
     Method: POST
@@ -212,9 +254,6 @@ def timer_post(project_id, process_id, task_id):
         now = datetime.datetime.now()
         now_str = now.strftime("%Y-%m-%d")
         print(f"commit_date: {now_str}, commit_time: {commit_time}, task_id: {task_id}")
-        
-        # HTTP200OKなどの結果を格納する数字
-        result_num = 0
 
         # プロジェクト一覧更新SQL
         timer_update_sql = sql_temp.TIMER_UPDATE_SQL.format(
@@ -227,12 +266,14 @@ def timer_post(project_id, process_id, task_id):
         rows = regain_db_driver.sql_run(timer_update_sql)
         rows = regain_db_driver.sql_run("COMMIT")
         result_num = regain_db_driver.db_close()
+
+        # 200 (OK)
+        result_num = 200
+        return f"Updateing commit time updated.", result_num
         
     except Exception as e:
-        print ('=== エラー内容 ===')
-        print ('type:' + str(type(e)))
-        print ('args:' + str(e.args))
-        print ('e自身:' + str(e))
-        return jsonify() # 本当はエラーページの表示をしたい
+        print("Error deleting process: {e}") # 本当はここでLoggerを使いたい
 
-    return jsonify()
+        # 500 (NG)
+        result_num = 500
+        return f"Error updating commit time with project_id: {project_id}, process_id: {process_id}, task_id: {task_id}.\nError: {str(e)}", result_num
