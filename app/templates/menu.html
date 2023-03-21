@@ -58,6 +58,7 @@
             <h1>工程一覧</h1>
         </div>
         <div class="col-7 d-flex align-items-end justify-content-end">
+            <!-- <button>はここまでボタンってこと その内部のi classはアイコン（ゴミ箱アイコンとか）の仕様 -->
             <button id="btnNewRecord" type="button" class="btn btn-info w-20 me-5 px-3"><i
                     class="fa-solid fa-plus"></i>New</button>
             <button id="btnEditRecord" type="button" class="btn btn-info w-20 me-5 px-3"><i
@@ -66,6 +67,7 @@
                     class="fa-solid fa-trash"></i>Trash</button>
         </div>
     </div>
+    <!-- tasks.htmlをflaskでいれる -->
     {% block article %}
     {% endblock %}
 </div>
